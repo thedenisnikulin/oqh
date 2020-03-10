@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
 import axios from 'axios';
-import Test from './Test';
+// Importing components
+import Home from './scenes/Home/Home';
+import Auth from './scenes/Auth/Auth';
 
 function App() {
   const [home, setHome] = useState();
@@ -16,12 +18,11 @@ function App() {
   return (
     <Router>
       <Switch>
-        <Route path="/home">
-          <h1>look: {home}</h1>
+        <Route path="/" component={Home}>
+          <Redirect to="/home" />
         </Route>
-        <Route path="/page">
-          <Test/>
-        </Route>
+        <Route path="/home" component={Home} />
+        <Route path="/auth" component={Auth} />
       </Switch>
     </Router>
   );
