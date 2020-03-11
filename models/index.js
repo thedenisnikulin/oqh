@@ -1,6 +1,7 @@
 const Sequelize = require('sequelize');
+const UserModel = require('./user');
 
-const sequelize = new Sequelize('dev_db', 'postgres', 'lol', {
+const sequelize = new Sequelize('dev_db', 'postgres', 'ReAapJJdm0', {
     host: 'localhost',
     dialect: 'postgres',
     pool: {
@@ -9,14 +10,15 @@ const sequelize = new Sequelize('dev_db', 'postgres', 'lol', {
       idle: 10000
     }
 });
-const models = {
-  User: sequelize.import('./user'),
-};
-Object.keys(models).forEach(key => {
-  if ('associate' in models[key]) {
-    models[key].associate(models);
-  }
+
+const User = UserModel(sequelize, Sequelize);
+
+sequelize.sync()
+  .then(() => {
+    console.log('Databases & tables created!')
 });
 
-module.exports.sequelize = sequelize;
-module.exports.models = models;
+module.exports = {
+  sequelize,
+  User,
+};

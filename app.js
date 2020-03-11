@@ -1,8 +1,8 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
+const bodyParser = require('body-parser');
 const sequelize = require('./models/index').sequelize;
-const models = require('./models/index').models;
 
 // Database Test
 sequelize.authenticate()
@@ -12,6 +12,8 @@ sequelize.authenticate()
   .catch(err => console.log(err));
 
 // Middleware
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 app.use((cors({credentials: true, origin: true})))
 
 // Routes

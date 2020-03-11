@@ -1,24 +1,20 @@
-const user = (sequelize, Sequelize) => {
-    const User = sequelize.define('user', {
+module.exports = (sequelize, type) => {
+    return sequelize.define('user', {
         username: {
-            type: Sequelize.STRING,
+            type: type.STRING,
             unique: true,
             allowNull: false,
         },
         password: {
-            type: Sequelize.STRING,
+            type: type.STRING,
             allowNull: false,
         },
         email: {
-            type: Sequelize.STRING,
+            type: type.STRING,
             unique: true,
             allowNull: false,
         },
     }, {
         freezeTableName: true 
     });
-
-    return User;
 }
-
-module.exports = user;
