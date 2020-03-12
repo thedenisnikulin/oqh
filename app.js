@@ -1,8 +1,17 @@
 const express = require('express');
-const app = express();
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const sequelize = require('./models/index').sequelize;
+const session = require('express-session')
+
+const app = express();
+
+// Session
+app.use(session({
+  secret: 'work hard',
+  resave: true,
+  saveUninitialized: false
+}));
 
 // Database Test
 sequelize.authenticate()
@@ -18,7 +27,7 @@ app.use((cors({credentials: true, origin: true})))
 
 // Routes
 app.use('/', require('./routes/home'))
-app.use('/auth/register', require('./routes/auth/registerUser'))
+app.use('/auth', require('./routes/auth/user'))
 
 
 const PORT = process.env.PORT || 5000;
