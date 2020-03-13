@@ -1,2 +1,3 @@
 node_modules
-request.rest
+login_test.rest
+register_test.rest

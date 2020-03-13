@@ -10,7 +10,10 @@ const app = express();
 app.use(session({
   secret: 'work hard',
   resave: true,
-  saveUninitialized: false
+  saveUninitialized: false,
+  cookie: {
+    maxAge: 1000 * 60 * 60 * 24 * 30, // 30 days
+  }
 }));
 
 // Database Test
@@ -27,7 +30,8 @@ app.use((cors({credentials: true, origin: true})))
 
 // Routes
 app.use('/', require('./routes/home'))
-app.use('/auth', require('./routes/auth/user'))
+app.use('/user', require('./routes/auth/user'))
+app.use('/user', require('./routes/userDashboard'));
 
 
 const PORT = process.env.PORT || 5000;
