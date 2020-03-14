@@ -43,7 +43,7 @@ router.post('/register', async (req, res) => {
     })
         .then(async (result) => {
             if (result) {
-                // user already exist
+                // user already exists
                 res.redirect(req.baseUrl + '/register');
             } else {
                 const hashedPassword = await bcrypt.hash(password, 10);
@@ -55,6 +55,7 @@ router.post('/register', async (req, res) => {
                     .then(user => {
                         // success
                         req.session.user = user.dataValues;    // session
+                        req.session.flag = 'user';
                         res.redirect(req.baseUrl + '/dashboard');
                 })
                     .catch(err => console.log(err));
@@ -71,7 +72,6 @@ router.post('/login', async (req, res, next) => {
         }
     })
         .then((user) => {
-            console.log(user.password)
             // no such user
             if (!user) {
                 res.redirect(req.baseUrl + '/login');
@@ -80,6 +80,7 @@ router.post('/login', async (req, res, next) => {
                     // success
                     if (result === true) { 
                         req.session.user = user.dataValues;      // session
+                        req.session.flag = 'user';
                         res.redirect(req.baseUrl + '/dashboard');
                     } else {
                         // invalid password

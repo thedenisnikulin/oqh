@@ -3,17 +3,22 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const sequelize = require('./models/index').sequelize;
 const session = require('express-session')
+const SequelizeStore = require('connect-session-sequelize')(session.Store);
+
 
 const app = express();
 
 // Session
 app.use(session({
-  secret: 'work hard',
+  secret: process.env.SESSION_SECRET,
   resave: true,
   saveUninitialized: false,
   cookie: {
     maxAge: 1000 * 60 * 60 * 24 * 30, // 30 days
-  }
+  },
+  store: new SequelizeStore({
+    db: sequelize
+  })
 }));
 
 // Database Test
@@ -30,9 +35,13 @@ app.use((cors({credentials: true, origin: true})))
 
 // Routes
 app.use('/', require('./routes/home'))
-app.use('/user', require('./routes/auth/user'))
-app.use('/user', require('./routes/userDashboard'));
+
+app.use('/user', require('./routes/user/auth'))
+app.use('/user', require('./routes/user/dashboard'));
+
+app.use('/company', require('./routes/company/auth'));
+app.use('/company', require('./routes/company/dashboard'));
 
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log('the server is running on port ' + PORT));
+const port = process.env.PORT;
+app.listen(port, () => console.log('the server is running on port ' + port));

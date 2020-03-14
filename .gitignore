@@ -1,3 +1,4 @@
+.env
 node_modules
 login_test.rest
 register_test.rest

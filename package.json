@@ -3,15 +3,16 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "nodemon app.js",
+    "start": "nodemon -r dotenv/config app.js",
     "client": "cd client && npm start",
-    "dev": "concurrently -n 'server,client' -c 'red,green' \"nodemon app.js\" \"npm run client\""
+    "dev": "concurrently -n 'server,client' -c 'red,green' \"npm start\" \"npm run client\""
   },
   "dependencies": {
     "axios": "^0.19.2",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
     "concurrently": "^5.1.0",
+    "connect-session-sequelize": "^6.1.1",
     "cookie-parser": "~1.4.4",
     "cors": "^2.8.5",
     "debug": "~2.6.9",
@@ -27,6 +28,7 @@
     "sequelize-cli": "^5.5.1"
   },
   "devDependencies": {
+    "dotenv": "^8.2.0",
     "nodemon": "^2.0.2"
   }
 }

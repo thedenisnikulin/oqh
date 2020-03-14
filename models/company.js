@@ -1,24 +1,20 @@
-const company = (sequelize, Sequelize) => {
-    const Company = sequelize.define('company', {
+module.exports = (sequelize, type) => {
+    return sequelize.define('company', {
         companyName: {
-            type: Sequelize.STRING,
+            type: type.STRING,
             unique: true,
             allowNull: false,
         },
         password: {
-            type: Sequelize.STRING,
+            type: type.STRING,
             allowNull: false,
         },
         email: {
-            type: Sequelize.STRING,
+            type: type.STRING,
             unique: true,
             allowNull: false,
         },
     }, {
         freezeTableName: true 
     });
-
-    return Company;
 }
-
-module.exports = company;

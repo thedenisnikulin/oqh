@@ -2,8 +2,9 @@ const express = require('express')
 const router = express.Router();
 
 const isLoggedIn = (req, res, next) => {
-    !req.session.user ? res.redirect('../user/login') : next();
-};
+    const user = req.session.user;
+    const flag = req.session.flag;
+    (!user || (flag !== 'user')) ? res.redirect('back') : next();};
 
 router.get('/dashboard', isLoggedIn, (req, res) => {
     res.send(`
