@@ -3,17 +3,9 @@ import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-d
 import axios from 'axios';
 // Importing components
 import Home from './scenes/Home/Home';
-import Auth from './scenes/Auth/Auth';
+import AuthUser from './scenes/user/AuthUser';
 
 function App() {
-  const [home, setHome] = useState();
-
-  useEffect(() => {
-    axios.get('http://localhost:5000/home')
-      .then(res => setHome(res.data.home))
-      .then(res => console.log(res))
-      .catch(err => console.log(err))
-  });
 
   return (
     <Router>
@@ -22,7 +14,7 @@ function App() {
           <Redirect to="/home" />
         </Route>
         <Route path="/home" component={Home} />
-        <Route path="/auth" component={Auth} />
+        <Route path="/user" component={AuthUser} />
       </Switch>
     </Router>
   );
