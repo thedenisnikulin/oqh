@@ -3,13 +3,13 @@ import { Route, Redirect } from 'react-router-dom';
 import axios from 'axios';
 
 
-const Protected = ({ children, access, ...rest }) => {
+const Protected = ({ children, access, loading, ...rest }) => {
 
   console.log(access);
     return (
       <div>
         <Route {...rest} render={(props) => {
-         if (access === null) {
+         if (loading) {
           return <h1>Loading...</h1>
          } else {
           if (access === true) {

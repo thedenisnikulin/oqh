@@ -16,6 +16,7 @@ function App() {
     tag: null,
   });
   const [access, setAccess] = useState(null);
+  const [loading, setLoading] = useState(true);
   axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('accessToken');
 
   useEffect(() => {
@@ -23,9 +24,10 @@ function App() {
   }, []);
 
   const checkToken = async () => {
-    const response = await axios.get('http://localhost:7000/user/check-token')
+    await axios.get('http://localhost:7000/user/check-token')
       .then(response => {
         setAccess(response.data.access)
+        setLoading(false);
       })
   }
 
@@ -47,7 +49,7 @@ function App() {
           render={(props) => <Register userData={userData} setUserData={setUserData} />} 
         />
 
-        <Protected path='/user/dashboard' access={access}>
+        <Protected path='/user/dashboard' access={access} loading={loading}>
           <Dashboard userData={userData} />
         </Protected>
 
