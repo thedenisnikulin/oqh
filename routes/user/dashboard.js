@@ -12,7 +12,11 @@ const checkToken = (req, res, next) => {  // maybe implement this as a middlewar
         if (err) res.json({ message: 'failed to verify token', access: false});
         
         req.user = decodedFromToken;
-        res.json({ access: true });
+        res.json({ access: true, userData: {
+            email: decodedFromToken.email,
+            username: decodedFromToken.username,
+            tag: decodedFromToken.tag
+        } });
     })
 }
 

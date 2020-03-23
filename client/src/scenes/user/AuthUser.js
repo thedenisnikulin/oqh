@@ -4,9 +4,8 @@ import axios from 'axios';
 
 
 export const Login = (props) => {
-  const userData= props.userData;
-  const setUserData = props.setUserData;
-  const [ message, setMessage ] = useState();
+  const { userData, setUserData }= props.userDataState;
+  const { message, setMessage } = props.messageState;
 
   const handleChange = (e) => {
     const { value, name } = e.target;
@@ -26,6 +25,7 @@ export const Login = (props) => {
             setUserData({
               email: result.data.data.user.email,
               username: result.data.data.user.username,
+              password: null,
               tag: result.data.data.user.tag
             });
             setMessage('success');
@@ -135,7 +135,7 @@ export const Register = (props) => {
 export const Logout = (props) => {
 
   const handleClick = () => {
-    localStorage.setItem('accessToken', null);
+    localStorage.removeItem('accessToken');
   }
 
   return(
