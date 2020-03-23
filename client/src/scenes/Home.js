@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Switch, Route, Link, useRouteMatch, useLocation } from 'react-router-dom';
 // Importing components
-import Auth from '../company/Auth';
 
 function Home() {
 
   return (
-    <Router>
-        
-    </Router>
+    <div>
+      <h1>Home</h1>
+    </div>
   );
 }
 

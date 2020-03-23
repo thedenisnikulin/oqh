@@ -5,31 +5,7 @@ const jwt = require('jsonwebtoken');
 
 const User = require('../../models/index').User;
 
-
-router.get('/register', (req, res, next) => { // must be protected as well as login
-    res.send(`
-        <h1>Register</h1>
-        <form method="post" action="/user/register">
-            <input name="username" placeholder="username" required/>
-            <input type="email" name="email" placeholder="email" required/>
-            <input type="password" name="password" placeholder="password" required />
-            <input type="submit" />
-        </form>
-        <a href="/user/login">Login</a>
-    `);
-})
-
-router.get('/login', (req, res, next) => {
-    res.send(`
-        <h1>Login</h1>
-        <form method="post" action="/user/login">
-            <input type="email" name="email" placeholder="email" required/>
-            <input type="password" name="password" placeholder="password" required />
-            <input type="submit" />
-        </form>
-        <a href="/user/register">Register</a>
-    `);
-})
+// TODO: implement refresh token later 'cos now I want to focus on the main logic
 
 router.post('/register', async (req, res) => {
     console.log(req.body)
@@ -42,7 +18,7 @@ router.post('/register', async (req, res) => {
         .then(async (foundUser) => {
             if (foundUser) {
                 // user already exists
-                res.status(403).json({ message: 'user already exists' });
+                res.json({ message: 'user already exists' });
             } else {
                 const hashedPassword = await bcrypt.hash(password, 10);
                 User.create({
@@ -54,11 +30,19 @@ router.post('/register', async (req, res) => {
                     .then(createdUser => {
                         // success
                         const token = jwt.sign(
-                            user.dataValues, 
+                            createdUser.dataValues, 
                             process.env.ACCESS_TOKEN_SECRET, 
                             { expiresIn: '30d' }
                         );
-                        res.status(200).json({ token });
+                        const data = {
+                            user: {
+                                email,
+                                username,
+                                tag
+                            },
+                            jwt: token
+                        };
+                        res.json({ data });
                 })
                     .catch(err => console.log(err));
             }
@@ -76,7 +60,7 @@ router.post('/login', async (req, res, next) => {
         .then((user) => {
             // no such user
             if (!user) {
-                res.status(401).json({ message: 'no such user' });
+                res.json({ message: 'no such user' });
             } else {
                 bcrypt.compare(password, user.password, (err, result) => {
                     // success
@@ -86,10 +70,19 @@ router.post('/login', async (req, res, next) => {
                             process.env.ACCESS_TOKEN_SECRET, 
                             { expiresIn: '30d' }
                         );
-                        res.status(200).json({ token });
+                        const data = {
+                            user: {
+                                email: user.email,
+                                username: user.username,
+                                tag: user.tag
+                            },
+                            jwt: token
+                        };
+                        console.log(data);
+                        res.json({ data });
                     } else {
                         // invalid password
-                        res.status(401).json({ message: 'invalid password' });
+                        res.json({ message: 'invalid password' });
                     }
                 })
             }
@@ -98,7 +91,7 @@ router.post('/login', async (req, res, next) => {
 });
 
 router.get('/logout', (req, res) => {
-    res.status(200).json({ token: null }); // get rid of that later and rather use frontend logout (destroy token on cookie/localstorage)
+    res.json({ token: null }); // get rid of that later and rather use frontend logout (destroy token on cookie/localstorage)
     }
 );
 
