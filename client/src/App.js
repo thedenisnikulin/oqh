@@ -16,7 +16,8 @@ function App() {
     email: null,
     username: null,
     password: null,
-    tag: null
+    tag: null,
+    rank: null
   });
   const [ access, setAccess ] = useState();
   const [ loading, setLoading ] = useState(true);

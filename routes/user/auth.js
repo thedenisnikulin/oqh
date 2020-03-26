@@ -25,7 +25,8 @@ router.post('/register', async (req, res) => {
                     email,
                     username,
                     password: hashedPassword,
-                    tag
+                    tag,
+                    rank: 0
                 })
                     .then(createdUser => {
                         // success
@@ -38,7 +39,8 @@ router.post('/register', async (req, res) => {
                             user: {
                                 email,
                                 username,
-                                tag
+                                tag,
+                                rank
                             },
                             jwt: token
                         };
@@ -74,11 +76,13 @@ router.post('/login', async (req, res, next) => {
                             user: {
                                 email: user.email,
                                 username: user.username,
-                                tag: user.tag
+                                tag: user.tag,
+                                rank: user.rank
                             },
                             jwt: token
                         };
                         console.log(data);
+                        req.userData = data;
                         res.json({ data });
                     } else {
                         // invalid password
@@ -91,7 +95,7 @@ router.post('/login', async (req, res, next) => {
 });
 
 router.get('/logout', (req, res) => {
-    res.json({ token: null }); // get rid of that later and rather use frontend logout (destroy token on cookie/localstorage)
+    res.json({ jwt: null }); // get rid of that later and rather use frontend logout (destroy token on cookie/localstorage)
     }
 );
 

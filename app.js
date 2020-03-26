@@ -22,10 +22,9 @@ app.use((cors({credentials: true, origin: true})))
 app.use('/', require('./routes/home'))
 
 app.use('/user', require('./routes/user/auth'))
+app.use('/user', require('./middleware/checkToken'));
 app.use('/user', require('./routes/user/dashboard'));
-
-app.use('/company', require('./routes/company/auth'));
-app.use('/company', require('./routes/company/dashboard'));
+app.get('/mm', require('./middleware/matchmaking'));
 
 
 const port = process.env.PORT;

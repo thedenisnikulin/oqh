@@ -1,6 +1,7 @@
 const Sequelize = require('sequelize');
 const UserModel = require('./user');
-const CompanyModel = require('./company');
+const PoolModel = require('./pool');
+const RoomModel = require('./room');
 
 const sequelize = new Sequelize(
   process.env.DB, 
@@ -16,7 +17,11 @@ const sequelize = new Sequelize(
 });
 
 const User = UserModel(sequelize, Sequelize);
-const Company = CompanyModel(sequelize, Sequelize);
+const Pool = PoolModel(sequelize, Sequelize);
+const Room = RoomModel(sequelize, Sequelize);
+
+Room.hasMany(User, {foreignKey: 'userId'});
+User.belongsTo(Room);
 
 sequelize.sync()
   .then(() => {
@@ -26,5 +31,6 @@ sequelize.sync()
 module.exports = {
   sequelize,
   User,
-  Company
+  Pool,
+  Room
 };

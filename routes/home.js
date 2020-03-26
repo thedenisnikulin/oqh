@@ -8,9 +8,7 @@ router.get('/', (req, res, next) => {
 router.get('/home', (req, res, next) => {
     res.send(`
       <h1>Welcome!</h1>
-      <p>Login as:</p>
-      <a href='/company/login'>Company</a>
-      <a href='/user/login'>User</a>
+      <a href='/user/login'>Login</a>
     `);
     next();
 });
