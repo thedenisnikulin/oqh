@@ -1,9 +1,9 @@
 const Sequelize = require('sequelize');
-const UserModel = require('./user');
-const PoolModel = require('./pool');
-const RoomModel = require('./room');
 
-const sequelize = new Sequelize(
+const db = {};     // contains all db instances
+
+db.Sequelize = Sequelize;
+db.sequelize = new Sequelize(
   process.env.DB, 
   process.env.DB_LOGIN, 
   process.env.DB_PASSWORD, {
@@ -16,21 +16,14 @@ const sequelize = new Sequelize(
     }
 });
 
-const User = UserModel(sequelize, Sequelize);
-const Pool = PoolModel(sequelize, Sequelize);
-const Room = RoomModel(sequelize, Sequelize);
+db.user = require('./user')(db.sequelize, db.Sequelize);
+db.room = require('./room')(db.sequelize, db.Sequelize);
 
-Room.hasMany(User, {foreignKey: 'userId'});
-User.belongsTo(Room);
+db.room.hasMany(db.user, { foreignKey: 'roomId' });
 
-sequelize.sync()
+db.sequelize.sync()
   .then(() => {
     console.log('Databases & tables created!')
 });
 
-module.exports = {
-  sequelize,
-  User,
-  Pool,
-  Room
-};
+module.exports = db;

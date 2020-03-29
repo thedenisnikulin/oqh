@@ -18,6 +18,7 @@ const checkToken = (req, res, next) => {  // maybe implement this as a middlewar
             tag: decodedFromToken.tag,
             rank: decodedFromToken.rank
         } });
+        next();
     })
 }
 

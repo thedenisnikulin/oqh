@@ -1,5 +1,5 @@
 module.exports = (sequelize, type) => {
-    return sequelize.define('room', {
+    const Room = sequelize.define('room', {
         id: {
             type: type.UUID,
             defaultValue: type.UUIDV4,
@@ -8,4 +8,7 @@ module.exports = (sequelize, type) => {
     }, {
         freezeTableName: true
     });
+
+
+    return Room;
 };

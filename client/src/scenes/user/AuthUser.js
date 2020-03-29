@@ -22,6 +22,7 @@ export const Login = (props) => {
           setMessage(result.data.message);
         } else {
             localStorage.setItem('accessToken', result.data.data.jwt);
+            // TODO: user object to localstorage
             setUserData({
               email: result.data.data.user.email,
               username: result.data.data.user.username,

@@ -1,5 +1,5 @@
 module.exports = (sequelize, type) => {
-    return sequelize.define('user', {
+    const User = sequelize.define('user', {
         id: {
             type: type.UUID,
             defaultValue: type.UUIDV4,
@@ -27,14 +27,20 @@ module.exports = (sequelize, type) => {
             type: type.INTEGER,
             defaultValue: 0
         },
+        isSearching: {
+            type: type.BOOLEAN,
+            defaultValue: false
+        },
+        team: {
+            type: type.ENUM,
+            values: ['A', 'B', 'C']
+        },
         roomId: {
-            type: type.UUID,
-            references: {
-                model: 'room',
-                key: 'id'
-            }
+            type: type.UUID
         }
     }, {
         freezeTableName: true 
     });
+
+    return User;
 }
