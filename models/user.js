@@ -33,7 +33,7 @@ module.exports = (sequelize, type) => {
         },
         team: {
             type: type.ENUM,
-            values: ['A', 'B', 'C']
+            values: ['A', 'B', 'C', 'D']
         },
         roomId: {
             type: type.UUID

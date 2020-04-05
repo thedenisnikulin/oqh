@@ -7,10 +7,12 @@ const Room = require('../models/index').room;
 // each room have 4 teams with 4 members.
 // each member have his class (tag) - 2 developers with "backend" tag and 2 with "frontend" tag
 // 1 room - 4 teams - 4 members
+const frontend_tag = 'frontend developer';
+const backend_tag = 'backend developer';
 
 router.post('/', async (req, res, next) => {
     const { user, action } = req.body;
-    // Room.findOne({where: {id: '1dd627c0-8ba8-4296-a92f-6330b23e0cda'}, include: [{model: User}]}).then(res => console.log(res.users))
+    Room.findOne({where: {id: 'db33efad-a158-41f3-8a44-b4ac16011ad4'}, include: [{model: User}]}).then(res => res.users.map(user => console.log(user.tag)))
     let userData = await User.findOne({where: {email: user.email}});
     switch(action) {
         case 'add_to_pool':
@@ -22,7 +24,7 @@ router.post('/', async (req, res, next) => {
         case 'search_room':
             searchRoom(req, res, next, userData);
             break;
-        case 'check_if_full':
+        case 'check_if_ready':
             checkIfReady(req, res, next, userData);
             break;
     }
@@ -47,9 +49,9 @@ const handleUserSearchingPool = (user, action) => {
 
 
 const searchRoom = async (req, res, next, currentUser) => {
-    // look for any room
+    // look for any rooms
     let numberOfRooms = await Room.count();
-    // no room found - create one and join
+    // no rooms found - create one and join
     if (numberOfRooms === 0) {
         let createdRoom = await Room.create({ include: [{ model: User }] });
         let room = await Room.findOne({where:{id:createdRoom.id}, include: [{model: User}]})
@@ -93,7 +95,7 @@ const searchRoom = async (req, res, next, currentUser) => {
     }
 };
 
-const checkIfReady = async (req, res, currentUser) => {
+const checkIfReady = async (req, res, next, currentUser) => {
     let room = await Room.findOne({ 
         where: { id: currentUser.roomId },
         include: [{ model: User }]
@@ -101,6 +103,28 @@ const checkIfReady = async (req, res, currentUser) => {
     if (room.users.length !== 16) {
         res.json({ isMatchFound: false });
     } else {
+        // map users by teams: 4 teams with 4 members
+        let teams = [
+            // 2 frontenders and 2 backenders in each team
+            [2, 2], [2, 2], // team A, team B
+            [2, 2], [2, 2]  // team C, team D
+        ];
+        const teamTags = ['A', 'B', 'C', 'D'];
+
+        room.users.map(user => {
+            let isSet = false;
+            let tagIndex = user.tag === frontend_tag ? 0 : 1;
+            for (let teamIndex = 0; teamIndex < teams.length; teamIndex++) {
+                if (isSet) break;
+                if (teams[teamIndex][tagIndex] !== 0) {
+                    teams[teamIndex][tagIndex]--;
+                    user.team = teamTags[teamIndex]
+                    user.save();
+                    isSet = true;
+                }
+            }
+        })
+        console.log('found')
         res.json({ isMatchFound: true });
     }
 }
@@ -108,7 +132,7 @@ const checkIfReady = async (req, res, currentUser) => {
 const debug_createUsers = async () => {
     var users = [];
     for (let i = 1; i <= 24; i++) {
-        let tag = i % 2 === 0 ? 'frontend developer' : 'backend developer'
+        let tag = i % 2 === 0 ? frontend_tag : backend_tag
         users.push({
             email: `test${i}@gmail.com`,
             username: `test${i}`,
