@@ -7,6 +7,7 @@ import { Login, Register } from './scenes/user/AuthUser';
 
 import Protected from './scenes/Protected'
 import Dashboard from './scenes/user/Dashboard'
+import Room from './scenes/user/Room'
 
 function App() {
 
@@ -57,6 +58,10 @@ function App() {
 
         <Protected path='/user/dashboard' access={access} loading={loading}>
           <Dashboard userData={userData} />
+        </Protected>
+
+        <Protected path='/user/room' access={access} loading={loading}>
+          <Room userData={userData}/>
         </Protected>
 
       </Switch>

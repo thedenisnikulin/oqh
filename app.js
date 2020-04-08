@@ -26,7 +26,7 @@ app.use('/', require('./routes/home'))
 app.use('/user', require('./routes/user/auth'))
 app.use('/user', require('./middleware/checkToken'));
 app.use('/user', require('./routes/user/dashboard'));
-app.use('/mm', require('./middleware/matchmaking'));
+app.use('/user', require('./middleware/matchmaking'));
 
 
 const port = process.env.PORT;

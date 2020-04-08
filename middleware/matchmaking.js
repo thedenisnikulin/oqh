@@ -10,28 +10,29 @@ const Room = require('../models/index').room;
 const frontend_tag = 'frontend developer';
 const backend_tag = 'backend developer';
 
-router.post('/', async (req, res, next) => {
+router.post('/mm', async (req, res, next) => {
     const { user, action } = req.body;
-    Room.findOne({where: {id: 'db33efad-a158-41f3-8a44-b4ac16011ad4'}, include: [{model: User}]}).then(res => res.users.map(user => console.log(user.tag)))
+    //Room.findOne({where: {id: 'db33efad-a158-41f3-8a44-b4ac16011ad4'}, include: [{model: User}]}).then(res => res.users.map(user => console.log(user.tag)))
     let userData = await User.findOne({where: {email: user.email}});
+    console.log(userData)
     switch(action) {
-        case 'add_to_pool':
+        case 'start':
             handleUserSearchingPool(userData, 1);
-            break;
-        case 'remove_from_pool':
-            handleUserSearchingPool(userData, 0)
-            break;
-        case 'search_room':
-            searchRoom(req, res, next, userData);
-            break;
-        case 'check_if_ready':
+            searchRoom(userData);
             checkIfReady(req, res, next, userData);
+            break;
+        case 'break':
+            handleUserSearchingPool(userData, 0);
+            userData.team = null;
+            userData.roomId = null;
+            userData.save();
             break;
     }
 });
 
 
 const handleUserSearchingPool = (user, action) => {
+    // searching pool - whether user is searching for a game or not
     // action === 1 (add to searching pool)
     // action === 0 (remove from searching pool)
     User.findOne({where: {email: user.email}})
@@ -48,7 +49,7 @@ const handleUserSearchingPool = (user, action) => {
 };
 
 
-const searchRoom = async (req, res, next, currentUser) => {
+const searchRoom = async (currentUser) => {
     // look for any rooms
     let numberOfRooms = await Room.count();
     // no rooms found - create one and join
@@ -100,6 +101,7 @@ const checkIfReady = async (req, res, next, currentUser) => {
         where: { id: currentUser.roomId },
         include: [{ model: User }]
     });
+    console.log(room.dataValues.id);
     if (room.users.length !== 16) {
         res.json({ isMatchFound: false });
     } else {
