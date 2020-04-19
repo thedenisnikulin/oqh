@@ -5,11 +5,6 @@ module.exports = (sequelize, type) => {
             defaultValue: type.UUIDV4,
             primaryKey: true,
         },
-        email: {
-            type: type.STRING,
-            unique: true,
-            allowNull: false,
-        },
         username: {
             type: type.STRING,
             unique: true,
@@ -19,21 +14,12 @@ module.exports = (sequelize, type) => {
             type: type.STRING,
             allowNull: false,
         },
-        tag: {
+        bio: {
             type: type.STRING,
-            allowNull: false,
-        },
-        rank: {
-            type: type.INTEGER,
-            defaultValue: 0
         },
         isSearching: {
             type: type.BOOLEAN,
             defaultValue: false
-        },
-        team: {
-            type: type.ENUM,
-            values: ['A', 'B', 'C', 'D']
         },
         roomId: {
             type: type.UUID

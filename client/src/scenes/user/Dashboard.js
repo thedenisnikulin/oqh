@@ -6,78 +6,44 @@ import Room from './Room'
 import useInterval from '../../hooks/useInterval'
 
 const Dashboard = (props) => {
+  const userData = props.userData;
+  const [ isSearching, setIsSearching ] = useState(false);
+  const [ isFound, setIsFound ] = useState(false);
+  const [ room, setRoom ] = useState({ id: userData.roomId, topic: '', users: null });
 
-  return (
-    <div className="dashboard">
-      <LeftNavigationBar />
-      <News/>
-      <Feed />
-      <RightNavigationBar userData={props.userData}/>
-    </div>
-  );
-}
-
-const LeftNavigationBar = () => {
-  return (
-    <div>
-    </div>
-  );
-}
-
-const News = (props) => {
-
-  return (
-    <div>
-
-    </div>
-  );
-}
-
-const Feed = () => {
-  return (
-    <div>
-      
-    </div>
-  );
-}
-
-const RightNavigationBar = (props) => {
-  const { email, username, tag, rank } = props.userData;
-  const [isSearching, setIsSearching] = useState(false);
-  const [isFound, setIsFound] = useState(false);
   useInterval(() => {
     fetch();
-  }, isSearching ? 5000 : null);
+  }, isSearching ? 1000 : null);
 
-  const fetch = () => {
-    return axios.post('http://localhost:7000/user/mm', {
-      user: {email},
+  const fetch = async () => {
+    const result = await axios.post('http://localhost:7000/user/mm', {
+      user: { email: userData.email },
+      topic: room.topic.toLowerCase(),
       action: isSearching ? 'start' : 'break'
-    }).then(result => {
-      const data = result.data;
-      setIsFound(data.isMatchFound);
-      data.isMatchFound && setIsSearching(false)
-    })
+    });
+    const data = result.data;
+    setIsFound(data.isMatchFound);
+    if (data.isMatchFound) {
+      setRoom({ ...room, users: data.room.users })
+      setIsSearching(false);
+    }
   };
 
   return (
     <div>
-      <Profile />
+      <input value={room.topic} onChange={(e) => setRoom({ ...room, topic: e.target.value })} />
       { isSearching && <Timer isSearchingState={{isSearching, setIsSearching}}/> }
-      <StartBreakMatchmaking 
+      <StartBreakMatchmaking
         isSearchingState={{isSearching, setIsSearching}}
         isFoundState={{isFound, setIsFound}}
       />
-      { isFound && <Redirect to='user/room'/> }
-    </div>
-  );
-}
-
-const Profile = (props) => {
-
-  return(
-    <div>
-
+      { <Redirect to={{
+        pathname:'/user/room',
+        state: {
+          userData,
+          room,
+        }
+      }}/> }
     </div>
   );
 }

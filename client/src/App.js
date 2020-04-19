@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-d
 import axios from 'axios';
 
 import Home from './scenes/Home';
-import { Login, Register } from './scenes/user/AuthUser';
+import { Login, Register, Logout } from './scenes/user/AuthUser';
 
 import Protected from './scenes/Protected'
 import Dashboard from './scenes/user/Dashboard'
@@ -11,14 +11,13 @@ import Room from './scenes/user/Room'
 
 function App() {
 
-  axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('accessToken');
+  axios.defaults.headers.common['Authorization'] = 'Bearer' + ' ' + localStorage.getItem('accessToken');
 
   const [ userData, setUserData ] = useState({
-    email: null,
     username: null,
     password: null,
-    tag: null,
-    rank: null
+    bio: null,
+    roomId: null
   });
   const [ access, setAccess ] = useState();
   const [ loading, setLoading ] = useState(true);
@@ -42,25 +41,24 @@ function App() {
     <Router>
       <Switch>
 
-        <Route path="/home">
+        <Route exact path="/">
           <Home />
         </Route>
 
-        <Route 
-          path="/user/login"
+        <Route exact path="/user/login"
           render={(props) => <Login userDataState={{ userData, setUserData }} messageState={{ message, setMessage }} />} 
         />
 
-        <Route 
-          path="/user/register"
+        <Route exact path="/user/register"
           render={(props) => <Register userData={userData} setUserData={setUserData} />} 
         />
 
-        <Protected path='/user/dashboard' access={access} loading={loading}>
+        <Protected exact path='/user/dashboard' access={access} loading={loading}>
           <Dashboard userData={userData} />
+          <Logout />
         </Protected>
 
-        <Protected path='/user/room' access={access} loading={loading}>
+        <Protected exact path='/user/room' access={access} loading={loading}>
           <Room userData={userData}/>
         </Protected>
 

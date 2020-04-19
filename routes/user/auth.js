@@ -5,14 +5,14 @@ const jwt = require('jsonwebtoken');
 
 const User = require('../../models/index').user;
 
-// TODO: implement refresh token later 'cos now I want to focus on the main logic
+// TODO: implement refresh token logic
 
 router.post('/register', async (req, res, next) => {
     console.log(req.body)
-    const { email, username, password, tag } = req.body;
+    const { username, password, bio } = req.body;
     const user = User.findOne({
         where: {
-            email
+            username
         }
     })
         .then(async (foundUser) => {
@@ -22,11 +22,9 @@ router.post('/register', async (req, res, next) => {
             } else {
                 const hashedPassword = await bcrypt.hash(password, 10);
                 User.create({
-                    email,
                     username,
                     password: hashedPassword,
-                    tag,
-                    rank: 0
+                    bio,
                 })
                     .then(createdUser => {
                         // success
@@ -37,14 +35,12 @@ router.post('/register', async (req, res, next) => {
                         );
                         const data = {
                             user: {
-                                email,
                                 username,
-                                tag,
-                                rank
+                                bio,
+                                roomId: null
                             },
                             jwt: token
                         };
-                        req.user = createdUser;
                         res.json({ data });
                         next();
                 })
@@ -55,10 +51,10 @@ router.post('/register', async (req, res, next) => {
 
 router.post('/login', async (req, res, next) => {
     console.log(req.body)
-    const { email, password } = req.body;
+    const { username, password } = req.body;
     const user = User.findOne({
         where: {
-            email
+            username
         }
     })
         .then((foundUser) => {
@@ -76,14 +72,12 @@ router.post('/login', async (req, res, next) => {
                         );
                         const data = {
                             user: {
-                                email: foundUser.email,
                                 username: foundUser.username,
-                                tag: foundUser.tag,
-                                rank: foundUser.rank
+                                bio: foundUser.bio,
+                                roomId: foundUser.roomId
                             },
                             jwt: token
                         };
-                        req.user = foundUser;
                         res.json({ data });
                         next();
                     } else {
@@ -95,11 +89,6 @@ router.post('/login', async (req, res, next) => {
         })
         .catch(err => console.log(err));
 });
-
-router.get('/logout', (req, res) => {
-    res.json({ jwt: null }); // get rid of that later and rather use frontend logout (destroy token on cookie/localstorage)
-    }
-);
 
 
 

@@ -4,6 +4,9 @@ module.exports = (sequelize, type) => {
             type: type.UUID,
             defaultValue: type.UUIDV4,
             primaryKey: true,
+        },
+        topic: {
+            type: type.STRING,
         }
     }, {
         freezeTableName: true

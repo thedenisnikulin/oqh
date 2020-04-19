@@ -14,20 +14,20 @@ export const Login = (props) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    axios.post('http://localhost:7000/user/login', { email: userData.email, password: userData.password })
+    axios.post('http://localhost:7000/user/login', { 
+      username: userData.username,
+      password: userData.password 
+    })
       .then(result => {
         console.log(result)
         if (result.data.message) {
-          // do that
           setMessage(result.data.message);
         } else {
             localStorage.setItem('accessToken', result.data.data.jwt);
-            // TODO: user object to localstorage
             setUserData({
-              email: result.data.data.user.email,
               username: result.data.data.user.username,
               password: null,
-              tag: result.data.data.user.tag
+              bio: result.data.data.user.bio
             });
             setMessage('success');
         }
@@ -40,9 +40,9 @@ export const Login = (props) => {
       <p>{JSON.stringify(userData)}</p>
       <form onSubmit={handleSubmit}>
         <input 
-          type='email' 
-          name='email' 
-          placeholder='Your email' 
+          type='text' 
+          name='username' 
+          placeholder='Your username' 
           onChange={handleChange}
           required
         />
@@ -73,8 +73,7 @@ export const Register = (props) => {
     e.preventDefault();
     axios.post('http://localhost:7000/user/register', { 
       username: userData.username,
-      tag: userData.tag,
-      email: userData.email, 
+      bio: userData.bio,
       password: userData.password
     })
       .then(result => {
@@ -85,9 +84,8 @@ export const Register = (props) => {
         } else {
             localStorage.setItem('accessToken', result.data.data.jwt);
             setUserData({
-              email: result.data.data.user.email,
               username: result.data.data.user.username,
-              tag: result.data.data.user.tag
+              bio: result.data.data.user.bio
             });
             setMessage('success');
         }
@@ -108,15 +106,8 @@ export const Register = (props) => {
         />
         <input 
           type='text' 
-          name='tag' 
-          placeholder='Tag' 
-          onChange={handleChange}
-          required
-        />
-        <input 
-          type='email' 
-          name='email' 
-          placeholder='Email' 
+          name='bio' 
+          placeholder='Bio' 
           onChange={handleChange}
           required
         />
