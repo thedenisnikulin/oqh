@@ -6,11 +6,10 @@ const socket = io.connect('http://localhost:8000')
 
 const Room = (props) => {
     const userData = props.userData;
-    const room = props.userData.room;
     
     return(
         <div>
-            <Chat userData={userData} room={room}/>
+            <Chat userData={userData}/>
         </div>
     );
 };
@@ -22,18 +21,18 @@ const Chat = (props) => {
     const [ history, setHistory ] = useState([]);
 
     useEffect(() => {
-        axios.post('http://localhost:7000/user/room', { roomId: userData.roomId })
-            .then(result => {
-                // this shit gets unsorted messages
-                result.data.messages.map(msg => {
-                    history.push(msg);
-                });
-                console.log(result.data.users);
-                setUsers(result.data.users);
-            })
-        socket.on('connect');
-        socket.emit('init', { userData: userData, room: userData.roomId });
-    }, []);
+        socket.on('message', (msg) => {
+            setHistory([...history, msg])
+        })
+    });
+    useEffect(() => {
+        socket.emit('connectRoom', userData.roomId);
+        socket.emit('init');
+        socket.on('init', (initData) => {
+            setHistory(initData.messages)
+            setUsers(initData.users);
+        })
+    }, [])
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -42,7 +41,6 @@ const Chat = (props) => {
             sender: userData,
         }
         socket.emit('message', msg)
-        setHistory([ ...history, msg ])
         setMessage('');
     }
     const handleChange = (e) => {

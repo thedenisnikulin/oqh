@@ -6,49 +6,57 @@ const Room = require('../../models/index').room;
 const chatMessage = require('../../models/index').chatMessage;
 
 router.post('/room', async (req, res, next) => {
-    const { roomId } = req.body;
-    let chatMessagesInRoom = await chatMessage.findAll({ where: { roomId }});
-    let usersInRoom = await User.findAll({ where: { roomId } });
-    console.log('in room ' + require('util').inspect(usersInRoom))
-    let readyMessages = [];
-    let safeUsers = [];
-    usersInRoom.forEach(user => {
-        user = {
-            id: user.dataValues.id,
-            username: user.dataValues.username,
-            bio: user.dataValues.bio
-        };
-        safeUsers.push(user);
-        // this shit gives unsorted messages
-        chatMessagesInRoom.forEach(msg => {
-            if (msg.senderId === user.id) {
-                readyMessages.push({
-                    message: msg.dataValues.message,
-                    sender: user
-                })
-            }
-        });
-    });
-    console.log('safe ' + require('util').inspect(safeUsers))
-    console.log('msgs ' + require('util').inspect(readyMessages))
-    res.json({ users: safeUsers, messages: readyMessages }); 
+    
 });
 
 io.on('connection', async (client) => {
-    let senderId;
     let roomId;
-    client.on('init', (init) => {
-        senderId = init.userData.id;
-        roomId = init.room;
+    console.log('user joined');
+
+    client.on('init', async () => {
+        let chatMessagesInRoom = await chatMessage.findAll({ where: { roomId }});
+        let usersInRoom = await User.findAll({ where: { roomId } });
+        
+        let readyMessages = [];
+        let safeUsers = [];
+        usersInRoom.forEach(user => {
+            user = {
+                id: user.dataValues.id,
+                username: user.dataValues.username,
+                bio: user.dataValues.bio
+            };
+            safeUsers.push(user);
+        });
+        chatMessagesInRoom.map(msg => {
+            for(let i=0; i<safeUsers.length; i++) {
+                if (safeUsers[i].id === msg.senderId) {
+                    readyMessages.push({
+                        message: msg.dataValues.message,
+                        sender: safeUsers[i]
+                    })
+                }
+            }
+        });
+        console.log(readyMessages)
+        client.emit('init', { users: safeUsers, messages: readyMessages })
     });
-    console.log('room connected');
+
+    client.on('connectRoom', (room) => {
+        roomId = room;
+        client.join(room);
+    })
+
     client.on('message', (msg) => {
-        console.log(msg);
-        console.log(senderId + ' ' + roomId)
+
         chatMessage.create({ 
             message: msg.message,
             senderId: msg.sender.id,
             roomId
+        });
+        
+        io.to(roomId).emit('message', {
+            message: msg.message,
+            sender: msg.sender
         });
     });
 })
