@@ -11,13 +11,20 @@ const Dashboard = (props) => {
   const [ isFound, setIsFound ] = useState(false);
   const [ room, setRoom ] = useState({ id: userData.roomId, topic: '', users: null });
 
+  let delay = 3000;
   useInterval(() => {
-    fetch();
-  }, isSearching ? 1000 : null);
+    if (isSearching) {
+      delay = 3000;
+      fetch();
+    } else {
+      fetch();
+      delay = null;
+    }
+  }, delay);
 
   const fetch = async () => {
     const result = await axios.post('http://localhost:7000/user/mm', {
-      user: { email: userData.email },
+      user: { username: userData.username },
       topic: room.topic.toLowerCase(),
       action: isSearching ? 'start' : 'break'
     });
@@ -37,7 +44,7 @@ const Dashboard = (props) => {
         isSearchingState={{isSearching, setIsSearching}}
         isFoundState={{isFound, setIsFound}}
       />
-      { <Redirect to={{
+      { isFound && <Redirect to={{
         pathname:'/user/room',
         state: {
           userData,

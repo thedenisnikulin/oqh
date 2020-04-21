@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import io from 'socket.io-client';
 
-const socket = io.connect('http://localhost:8000')
+let socket;
 
 const Room = (props) => {
     const userData = props.userData;
@@ -21,18 +21,23 @@ const Chat = (props) => {
     const [ history, setHistory ] = useState([]);
 
     useEffect(() => {
-        socket.on('message', (msg) => {
-            setHistory([...history, msg])
-        })
-    });
-    useEffect(() => {
+        socket = io.connect('http://localhost:8000');
         socket.emit('connectRoom', userData.roomId);
         socket.emit('init');
         socket.on('init', (initData) => {
             setHistory(initData.messages)
             setUsers(initData.users);
         })
-    }, [])
+        return () => {
+            socket.emit('disconnect')  // room timer will disconnect the room
+        }
+    }, []);
+
+    useEffect(() => {
+        socket.on('message', (msg) => {
+            setHistory([...history, msg])
+        })
+    });
 
     const handleSubmit = (e) => {
         e.preventDefault();

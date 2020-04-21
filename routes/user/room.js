@@ -59,6 +59,10 @@ io.on('connection', async (client) => {
             sender: msg.sender
         });
     });
+
+    client.on('disconnect', () => {
+        client.removeAllListeners(roomId);
+    })
 })
 
 module.exports = router;
