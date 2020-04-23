@@ -11,7 +11,7 @@ router.post('/room', async (req, res, next) => {
 
 io.on('connection', async (client) => {
     let roomId;
-    console.log('user joined');
+    console.log('SOCKET: user joined');
 
     client.on('init', async () => {
         let chatMessagesInRoom = await chatMessage.findAll({ where: { roomId }});
@@ -37,13 +37,14 @@ io.on('connection', async (client) => {
                 }
             }
         });
-        console.log(readyMessages)
+        console.log('SOCKET: init messages ' + require('util').inspect(readyMessages))
         client.emit('init', { users: safeUsers, messages: readyMessages })
     });
 
     client.on('connectRoom', (room) => {
         roomId = room;
         client.join(room);
+        console.log('SOCKET: connectRoom: roomId - ')
     })
 
     client.on('message', (msg) => {

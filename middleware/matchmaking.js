@@ -14,20 +14,26 @@ router.post('/mm', async (req, res, next) => {
     //Room.findOne({where: {id: 'db33efad-a158-41f3-8a44-b4ac16011ad4'}, include: [{model: User}]}).then(res => res.users.map(user => console.log(user)))
     let userData = await User.findOne({where: {username: user.username}});
     switch(action) {
-        case 'start':
+        case 'find_room':
             userData.isSearching = true;
             await userData.save()
-            console.log('saved');
-            await searchRoom(userData, topic)
-            console.log('searched')
-            let result = await checkIfReady(userData)
-            console.log('checked ')
-            console.log(result)
+            let isRoomFound = await findRoom(userData, topic)
+            console.log('mm main: room found')
+            res.json(isRoomFound)
+            break;
+        case 'check_if_ready':
+            let isRoomReady = await checkIfReady(userData);
+            console.log('mm main: room checked') 
+            console.log(isRoomReady)     
+            res.json(isRoomReady);
+            break;
+        case 'get_room_id':
+            res.json(userData.roomId)
             break;
         case 'break':
             userData.isSearching = false;
             userData.roomId = null;
-            userData.save();
+            await userData.save();
             break;
     }
 });
@@ -37,45 +43,53 @@ router.post('/mm', async (req, res, next) => {
 // TODO: divide search and check into 2 different actions
 // TODO: send actions to find a room, if the room is found - send actions to check
 
-const searchRoom = async (currentUser, topic) => {
+const findRoom = async (currentUser, topic) => {
     let foundRooms = await Room.findAll({ include: [{ model: User }] });
     let isRoomFound = false;
 
     for (let i = 0; i < foundRooms.length; i++) {
-        console.log('found roomz '+ require('util').inspect(foundRooms))
+        console.log('findRoom: found roomz '+ require('util').inspect(foundRooms))
         console.log(foundRooms[i].id)
         console.log(foundRooms[i].users.length)
         if (foundRooms[i].topic === topic && foundRooms[i].users.length < 4) {
-            console.log('gotcha')
+            console.log('findRoom: gotcha')
             foundRooms[i].users.push(currentUser)
             await foundRooms[i].save()
             currentUser.roomId = foundRooms[i].id;
             await currentUser.save()
             isRoomFound = true;
-            await User.findOne({where: {id: currentUser.id}}).then((u) => console.log('u from search' + require('util').inspect(u)))
+            console.log('findRoom: found room id is ' + foundRooms[i].id)
+            await User.findOne({where: {id: currentUser.id}}).then((u) => console.log('findRoom: u from search' + require('util').inspect(u)))
             break;
         }
     };
     if (isRoomFound === false) {
         Room.create({ include: [{ model: User }] })
             .then(async (createdRoom) => {
-                let room = await Room.findOne({where:{id:createdRoom.id}, include: [{model: User}]})
-                room.topic = topic;
-                room.users.push(currentUser);
-                await room.save();
-                currentUser.roomId = room.id;
+                createdRoom.topic = topic;
+                createdRoom.users.push(currentUser);
+                await createdRoom.save();
+                currentUser.roomId = createdRoom.id;
                 await currentUser.save();
+                isRoomFound = true;
+                console.log('findRoom: created room id is ' + createdRoom.id)
+            })
+            .catch(err => {
+                console.log('findRoom: A error during finding room occured')
+                console.log(err)
+                isRoomFound = false;
             })
     }
+    return({ isRoomFound: isRoomFound })
 };
 
 const checkIfReady = async (currentUser) => {
-    console.log('user from check: ' + require('util').inspect(currentUser))
+    console.log('checkIfReady: user - ' + require('util').inspect(currentUser))
     let room = await Room.findOne({ 
         where: { id: currentUser.roomId },
         include: [{ model: User }]
     });
-    console.log(room.users);
+    console.log('checkIfReady: room users -' + require('util').inspect(room.users));
     if (room.users.length === 4) {
         let usersInRoom = [];
         room.users.forEach(user => {
@@ -86,11 +100,11 @@ const checkIfReady = async (currentUser) => {
             }
         )});
         console.log(usersInRoom)
-        console.log('room\'s ready')
-        return({ isMatchFound: true, room: { id: room.id, users: usersInRoom } });
+        console.log('checkIfReady: room\'s ready')
+        return({ isRoomReady: true, room: { id: room.id, topic: room.topic, users: usersInRoom } });
     } else {
-        console.log('room\'s not ready')
-        return({ isMatchFound: false });
+        console.log('checkIfReady: room\'s not ready')
+        return({ isRoomReady: false });
     }
 }
 

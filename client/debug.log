@@ -1,2 +1,10 @@
 [0420/221732.643:ERROR:file_io.cc(134)] WriteFile: Идет закрытие канала. (0xE8)
 [0421/231927.614:ERROR:file_io.cc(89)] ReadExactly: expected 36, observed 0
+[0422/222621.253:ERROR:file_io.cc(134)] WriteFile: Идет закрытие канала. (0xE8)
+[0423/203051.129:ERROR:file_io.cc(134)] WriteFile: Идет закрытие канала. (0xE8)
+[0423/211821.341:ERROR:file_io.cc(134)] WriteFile: Идет закрытие канала. (0xE8)
+[0423/214531.428:ERROR:file_io.cc(134)] WriteFile: Идет закрытие канала. (0xE8)
+[0423/215708.466:ERROR:file_io.cc(134)] WriteFile: Идет закрытие канала. (0xE8)
+[0423/223810.846:ERROR:file_io.cc(134)] WriteFile: Идет закрытие канала. (0xE8)
+[0423/233136.070:ERROR:file_io.cc(134)] WriteFile: Идет закрытие канала. (0xE8)
+[0423/235226.836:ERROR:file_io.cc(134)] WriteFile: Идет закрытие канала. (0xE8)

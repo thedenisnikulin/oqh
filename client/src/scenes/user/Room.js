@@ -22,6 +22,7 @@ const Chat = (props) => {
 
     useEffect(() => {
         socket = io.connect('http://localhost:8000');
+        console.log(userData)
         socket.emit('connectRoom', userData.roomId);
         socket.emit('init');
         socket.on('init', (initData) => {

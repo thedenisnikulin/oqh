@@ -8,7 +8,6 @@ const User = require('../../models/index').user;
 // TODO: implement refresh token logic
 
 router.post('/register', async (req, res, next) => {
-    console.log(req.body)
     const { username, password, bio } = req.body;
     const user = User.findOne({
         where: {
@@ -44,13 +43,12 @@ router.post('/register', async (req, res, next) => {
                         res.json({ data });
                         next();
                 })
-                    .catch(err => console.log(err));
+                    .catch(err => console.log("AUTH REG: error " + require('util').inspect(err)));
             }
         })
 });
 
 router.post('/login', async (req, res, next) => {
-    console.log(req.body)
     const { username, password } = req.body;
     const user = User.findOne({
         where: {
@@ -87,7 +85,7 @@ router.post('/login', async (req, res, next) => {
                 })
             }
         })
-        .catch(err => console.log(err));
+        .catch(err => console.log("AUTH LOG: error " + require('util').inspect(err)));
 });
 
 

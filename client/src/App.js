@@ -23,10 +23,6 @@ function App() {
   const [ loading, setLoading ] = useState(true);
   const [ message, setMessage ] = useState();
 
-  useEffect(() => {
-    checkToken();
-  }, []);
-
   const checkToken = async () => {
     await axios.get('http://localhost:7000/user/check-token')
       .then(response => {
@@ -34,6 +30,7 @@ function App() {
         setAccess(response.data.access)
         setMessage(response.data.message);
         setLoading(false);
+        console.log('from checkToken' + response.data.userData.roomId)
       })
   }
 
@@ -53,12 +50,12 @@ function App() {
           render={(props) => <Register userData={userData} setUserData={setUserData} />} 
         />
 
-        <Protected exact path='/user/dashboard' access={access} loading={loading}>
-          <Dashboard userData={userData} />
+        <Protected exact path='/user/dashboard' checkToken={checkToken} access={access} loading={loading}>
+          <Dashboard userDataState={{ userData, setUserData }} />
           <Logout />
         </Protected>
 
-        <Protected exact path='/user/room' access={access} loading={loading}>
+        <Protected exact path='/user/room' checkToken={checkToken} access={access} loading={loading}>
           <Room userData={userData}/>
         </Protected>
 

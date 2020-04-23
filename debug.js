@@ -31,3 +31,4 @@ const searchRoom = async (currentUser, topic) => {
 
 searchRoom(user, 'code');
 console.log(user)
+console.log('\x1b[41m', 'lmao')

@@ -3,7 +3,10 @@ import { Route, Redirect } from 'react-router-dom';
 import axios from 'axios';
 
 
-const Protected = ({ children, access, loading, ...rest }) => {
+const Protected = ({ children, checkToken, access, loading, ...rest }) => {
+  useEffect(() => {
+    checkToken();
+  }, []);
 
   console.log(access);
     return (
