@@ -1,24 +1,32 @@
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Redirect } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import axios from 'axios';
 
-import Room from './Room'
 import useInterval from '../../hooks/useInterval'
 
 // every request to /mm makes a lot of unnecessary db queries to get current user
 // better provide a consistent userdata when checking token
 
 const Dashboard = (props) => {
-  const { userData, setUserData } = props.userDataState;
-  const [ room, setRoom ] = useState({ id: '', topic: '', users: [] });
+  const { userData, setUserData } = props;
+  const { room, setRoom } = props;
+
   const [ isSearching, setIsSearching ] = useState(false);
   const [ isRoomFound, setIsRoomFound ] = useState(false);
   const [ isRoomReady, setIsRoomReady ] = useState(false);
+
+  const [ usersSearching, setUsersSearching ] = useState();
+
   const [ delay, setDelay ] = useState(3000);
 
-  // backend sends one room but it gives another room
-  // maybe because it calls findRoom twice
+  const [ topics, setTopics ] = useState([
+    'programming', 'design', 'history', 
+    'sport', 'politics', 'foreign languages', 
+    'media', 'anime', 'art', 'music', 'random'
+  ]);
+
   useInterval(async () => {
+    fetchPeopleSearching();
     if (!isRoomFound) {
       await findRoom();
       console.log('i found it')
@@ -40,52 +48,72 @@ const Dashboard = (props) => {
       setIsRoomReady(true);
       setUserData({ ...userData, roomId: room.id })
     }
-    
   }, [room])
 
   useEffect(() => {
+    // I haven't tested it, maybe it is even unecessary
+    fetchRoomId();
+  }, [])
+
+  const fetchRoomId = () => {
+    // MAY NEED USE OF ASYNC
     axios.post('http://localhost:7000/user/mm', {
       user: { username: userData.username },
       topic: room.topic.toLowerCase(),
       action: 'get_room_id'
-    }).then((resp) => {
-      console.log(resp)
+    }).then((result) => {
+      console.log(result)
+      const id = result.data.roomId;
+      setIsRoomReady(true);
+      setUserData({ ...userData, roomId: id })
     })
-  }, [])
+  };
 
-  // find room once, then check while not ready
+  const fetchPeopleSearching = () => {
+    // MAY NEED USE OF ASYNC
+    isSearching && axios.post('http://localhost:7000/user/mm', {
+      user: { username: userData.username },
+      topic: room.topic.toLowerCase(),
+      action: 'get_people_searching'
+    }).then(result => {
+      const data = result.data.usersSearching;
+      setUsersSearching(data)
+    })
+  }
 
   const findRoom = async () => {
-    let result = await axios.post('http://localhost:7000/user/mm', {
+    axios.post('http://localhost:7000/user/mm', {
       user: { username: userData.username },
       topic: room.topic.toLowerCase(),
       action: 'find_room'
-    });
-    const data = result.data;
-    console.log(data);
-    setIsRoomFound(data.isRoomFound);
+    }).then(result => {
+      const data = result.data.isRoomFound;
+      console.log(data);
+      setIsRoomFound(data);
+    })
+    
     }
 
   const checkIfReady = async () => {
-    let result = await axios.post('http://localhost:7000/user/mm', {
+    axios.post('http://localhost:7000/user/mm', {
       user: { username: userData.username },
       topic: room.topic.toLowerCase(),
       action: 'check_if_ready'
+    }).then(result => {
+      const data = result.data;
+      console.log(data)
+      console.log('we are here')
+      if (data.isRoomReady) {
+        console.log('room id before set' + require('util').inspect(room.id))
+        setRoom(data.room);
+      }
     });
-    const data = result.data;
-    console.log(data)
-    console.log('we are here')
-    if (data.isRoomReady) {
-      console.log('room id before set' + require('util').inspect(room.id))
-      setRoom(data.room);
-    }
-    
   };
 
   const breakSearch = async (e) => {
     e.preventDefault();
     setIsSearching(false);
-    let result = await axios.post('http://localhost:7000/user/mm', {
+    await axios.post('http://localhost:7000/user/mm', {
       user: { username: userData.username },
       topic: room.topic.toLowerCase(),
       action: 'break'
@@ -100,18 +128,13 @@ const Dashboard = (props) => {
       />
 
       { isSearching && <Timer isSearching={isSearching}/> }
+      { isSearching && <div>users searching {usersSearching}</div> }
 
       <button onClick={ isSearching ? breakSearch : () => setIsSearching(true) }>
         { isSearching ? <div>break</div> : <div>start</div> }
       </button>
 
-      { isRoomReady && <Redirect to={{
-        pathname:'/user/room',
-        state: {
-          userData,
-          room,
-        }
-      }}/> }
+      { isRoomReady && <Redirect to='/users/room'/> }
     </div>
   );
 }

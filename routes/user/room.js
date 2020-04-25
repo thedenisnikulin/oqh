@@ -48,7 +48,6 @@ io.on('connection', async (client) => {
     })
 
     client.on('message', (msg) => {
-
         chatMessage.create({ 
             message: msg.message,
             senderId: msg.sender.id,
@@ -58,11 +57,19 @@ io.on('connection', async (client) => {
         io.to(roomId).emit('message', {
             message: msg.message,
             sender: msg.sender
-        });
+        });         
     });
 
-    client.on('disconnect', () => {
+    client.on('disconnectRoom', () => {
         client.removeAllListeners(roomId);
+        chatMessage.destroy({ where: { roomId } });
+        Room.destroy({ where: { roomId } });
+    })
+    client.on('disconnectUser', async (username) => {
+        let user = await User.findOne({ where: { username } })
+        user.isSearching = false;
+        user.roomId = null;
+        await userData.save();
     })
 })
 

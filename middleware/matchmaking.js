@@ -30,6 +30,10 @@ router.post('/mm', async (req, res, next) => {
         case 'get_room_id':
             res.json(userData.roomId)
             break;
+        case 'get_users_searching':
+            let usersSearching = await User.count({ where: { isSearching: true } });
+            console.log('mm main: people searching: ' + usersSearching)
+            res.json(usersSearching)
         case 'break':
             userData.isSearching = false;
             userData.roomId = null;

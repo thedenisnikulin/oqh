@@ -19,6 +19,11 @@ function App() {
     bio: null,
     roomId: null
   });
+  const [ room, setRoom ] = useState({ 
+    id: '', 
+    topic: '', 
+    users: [] 
+  });
   const [ access, setAccess ] = useState();
   const [ loading, setLoading ] = useState(true);
   const [ message, setMessage ] = useState();
@@ -51,12 +56,12 @@ function App() {
         />
 
         <Protected exact path='/user/dashboard' checkToken={checkToken} access={access} loading={loading}>
-          <Dashboard userDataState={{ userData, setUserData }} />
+          <Dashboard userDataState={{ userData, setUserData }} roomState={{ room, setRoom }} />
           <Logout />
         </Protected>
 
         <Protected exact path='/user/room' checkToken={checkToken} access={access} loading={loading}>
-          <Room userData={userData}/>
+          <Room userDataState={{ userData, setUserData }} roomState={{ room, setRoom }}/>
         </Protected>
 
       </Switch>

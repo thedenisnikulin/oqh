@@ -5,21 +5,21 @@ import io from 'socket.io-client';
 let socket;
 
 const Room = (props) => {
-    const userData = props.userData;
     
     return(
         <div>
-            <Chat userData={userData}/>
+            <Chat userDataState={props.userDataState}/>
         </div>
     );
 };
 
 const Chat = (props) => {
-    const { userData } = props;
-    const [ users, setUsers ] = useState([]);
+    const { userData, setUserData } = props;
+    const { room, setRoom } = props;
     const [ message, setMessage ] = useState('');
     const [ history, setHistory ] = useState([]);
 
+    // initialize data
     useEffect(() => {
         socket = io.connect('http://localhost:8000');
         console.log(userData)
@@ -27,18 +27,35 @@ const Chat = (props) => {
         socket.emit('init');
         socket.on('init', (initData) => {
             setHistory(initData.messages)
-            setUsers(initData.users);
+            setRoom({ ...room, users: initData.users });
         })
         return () => {
-            socket.emit('disconnect')  // room timer will disconnect the room
+            leaveRoom();
         }
     }, []);
 
+    // listen to messages
     useEffect(() => {
         socket.on('message', (msg) => {
             setHistory([...history, msg])
         })
     });
+
+    const leaveRoom = async () => {
+        if (room.users.length <= 2) {
+            socket.emit('disconnectRoom');
+        }
+        setRoom({ ...room, users: room.users.filter((user) => user.username !== userData.username) });
+        setUserData({ ...userData, roomId: '' });
+        socket.emit('disconnectUser', userData.username);
+    }
+
+    const handleLeaveRoom = (e) => {
+        e.preventDefault();
+        leaveRoom();
+        // didn't tested this
+        props.history.push('/user/dashboard');
+    }
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -67,6 +84,7 @@ const Chat = (props) => {
                 <input onChange={handleChange} value={message}/>
                 <button>submit</button>
             </form>
+            <button value='leave' onClick={handleLeaveRoom} />
         </div>
     );
 }
