@@ -8,8 +8,8 @@ import useInterval from '../../hooks/useInterval'
 // better provide a consistent userdata when checking token
 
 const Dashboard = (props) => {
-  const { userData, setUserData } = props;
-  const { room, setRoom } = props;
+  const { userData, setUserData } = props.userDataState;
+  const { room, setRoom } = props.roomState;
 
   const [ isSearching, setIsSearching ] = useState(false);
   const [ isRoomFound, setIsRoomFound ] = useState(false);
@@ -19,14 +19,8 @@ const Dashboard = (props) => {
 
   const [ delay, setDelay ] = useState(3000);
 
-  const [ topics, setTopics ] = useState([
-    'programming', 'design', 'history', 
-    'sport', 'politics', 'foreign languages', 
-    'media', 'anime', 'art', 'music', 'random'
-  ]);
-
   useInterval(async () => {
-    fetchPeopleSearching();
+    //fetchPeopleSearching();
     if (!isRoomFound) {
       await findRoom();
       console.log('i found it')
@@ -50,24 +44,24 @@ const Dashboard = (props) => {
     }
   }, [room])
 
-  useEffect(() => {
-    // I haven't tested it, maybe it is even unecessary
-    fetchRoomId();
-  }, [])
+  // useEffect(() => {
+  //   // I haven't tested it, maybe it is even unecessary
+  //   fetchRoomId();
+  // }, [])
 
-  const fetchRoomId = () => {
-    // MAY NEED USE OF ASYNC
-    axios.post('http://localhost:7000/user/mm', {
-      user: { username: userData.username },
-      topic: room.topic.toLowerCase(),
-      action: 'get_room_id'
-    }).then((result) => {
-      console.log(result)
-      const id = result.data.roomId;
-      setIsRoomReady(true);
-      setUserData({ ...userData, roomId: id })
-    })
-  };
+  // const fetchRoomId = () => {
+  //   // MAY NEED USE OF ASYNC
+  //   axios.post('http://localhost:7000/user/mm', {
+  //     user: { username: userData.username },
+  //     topic: room.topic.toLowerCase(),
+  //     action: 'get_room_id'
+  //   }).then((result) => {
+  //     console.log(result)
+  //     const id = result.data.roomId;
+  //     setIsRoomReady(true);
+  //     setUserData({ ...userData, roomId: id })
+  //   })
+  // };
 
   const fetchPeopleSearching = () => {
     // MAY NEED USE OF ASYNC
@@ -82,32 +76,29 @@ const Dashboard = (props) => {
   }
 
   const findRoom = async () => {
-    axios.post('http://localhost:7000/user/mm', {
+    let result = await axios.post('http://localhost:7000/user/mm', {
       user: { username: userData.username },
       topic: room.topic.toLowerCase(),
       action: 'find_room'
-    }).then(result => {
-      const data = result.data.isRoomFound;
-      console.log(data);
-      setIsRoomFound(data);
     })
-    
+    const data = result.data.isRoomFound;
+    console.log(data);
+    setIsRoomFound(data);
     }
 
   const checkIfReady = async () => {
-    axios.post('http://localhost:7000/user/mm', {
+    let result = await axios.post('http://localhost:7000/user/mm', {
       user: { username: userData.username },
       topic: room.topic.toLowerCase(),
       action: 'check_if_ready'
-    }).then(result => {
-      const data = result.data;
-      console.log(data)
-      console.log('we are here')
-      if (data.isRoomReady) {
-        console.log('room id before set' + require('util').inspect(room.id))
-        setRoom(data.room);
-      }
-    });
+    })
+    const data = result.data;
+    console.log(data)
+    console.log('we are here')
+    if (data.isRoomReady) {
+      console.log('room id before set' + require('util').inspect(room.id))
+      setRoom(data.room);
+    }
   };
 
   const breakSearch = async (e) => {
@@ -127,12 +118,16 @@ const Dashboard = (props) => {
         onChange={(e) => setRoom({ ...room, topic: e.target.value })} 
       />
 
-      { isSearching && <Timer isSearching={isSearching}/> }
-      { isSearching && <div>users searching {usersSearching}</div> }
+      <TopicSelection roomState={props.roomState} />
 
       <button onClick={ isSearching ? breakSearch : () => setIsSearching(true) }>
         { isSearching ? <div>break</div> : <div>start</div> }
       </button>
+
+      { isSearching && <Timer isSearching={isSearching}/> }
+      { isSearching && <div>users searching: {usersSearching}</div> }
+
+     
 
       { isRoomReady && <Redirect to='/users/room'/> }
     </div>
@@ -151,6 +146,54 @@ const Timer = (props) => {
   return(
     <div>
       { timer[0] }:{ timer[1] }
+    </div>
+  );
+};
+
+const TopicSelection = (props) => {
+  const INITIAL_TOPICS = [
+    'random', 'programming', 'design', 'history', 
+    'sport', 'politics', 'foreign languages', 
+    'media', 'anime', 'art', 'music', 'code'
+  ];
+  const { room, setRoom } = props.roomState;
+  const [ changeableTopics, setChangeableTopics ] = useState([]);
+  const [ topic, setTopic ] = useState('');
+
+  const handleButtonClick = (e) => {
+    e.preventDefault();
+    let value = e.target.value.slice(1);
+    console.log('e ' + value)
+    setRoom({ ...room, topic: value});
+  }
+  useEffect(() => {
+    console.log(room)
+  }, [room])
+
+  useEffect(() => {
+    if (topic === '') {
+      setChangeableTopics(INITIAL_TOPICS);
+    } else {
+      setChangeableTopics(INITIAL_TOPICS.filter(t => t.includes(topic)));
+    } 
+    
+  }, [topic])
+
+  const handleSearchChange = (e) => {
+    e.preventDefault();
+    setTopic(e.target.value);
+  }
+
+  return(
+    <div>
+      <input placeholder='search...' onChange={handleSearchChange}/>
+      <div>
+        {
+          changeableTopics.map(topic => 
+            <input type='button' value={'#' + topic} onClick={handleButtonClick} />
+          )
+        }
+      </div>
     </div>
   );
 }

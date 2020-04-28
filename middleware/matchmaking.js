@@ -11,7 +11,6 @@ router.post('/mm', async (req, res, next) => {
     //     debug_updateIsSearchingAll();
     // });
     
-    //Room.findOne({where: {id: 'db33efad-a158-41f3-8a44-b4ac16011ad4'}, include: [{model: User}]}).then(res => res.users.map(user => console.log(user)))
     let userData = await User.findOne({where: {username: user.username}});
     switch(action) {
         case 'find_room':
@@ -19,6 +18,7 @@ router.post('/mm', async (req, res, next) => {
             await userData.save()
             let isRoomFound = await findRoom(userData, topic)
             console.log('mm main: room found')
+            console.log(isRoomFound)
             res.json(isRoomFound)
             break;
         case 'check_if_ready':
@@ -42,49 +42,66 @@ router.post('/mm', async (req, res, next) => {
     }
 });
 
-// when the room is ready, only the last joined member gets 'found' message, but
-// others get 'not found'
-// TODO: divide search and check into 2 different actions
-// TODO: send actions to find a room, if the room is found - send actions to check
-
-const findRoom = async (currentUser, topic) => {
-    let foundRooms = await Room.findAll({ include: [{ model: User }] });
-    let isRoomFound = false;
-
-    for (let i = 0; i < foundRooms.length; i++) {
-        console.log('findRoom: found roomz '+ require('util').inspect(foundRooms))
-        console.log(foundRooms[i].id)
-        console.log(foundRooms[i].users.length)
-        if (foundRooms[i].topic === topic && foundRooms[i].users.length < 4) {
-            console.log('findRoom: gotcha')
-            foundRooms[i].users.push(currentUser)
-            await foundRooms[i].save()
-            currentUser.roomId = foundRooms[i].id;
-            await currentUser.save()
-            isRoomFound = true;
-            console.log('findRoom: found room id is ' + foundRooms[i].id)
-            await User.findOne({where: {id: currentUser.id}}).then((u) => console.log('findRoom: u from search' + require('util').inspect(u)))
-            break;
+const findRoom = (currentUser, topic) => {
+    return Room.findAll({ include: [{ model: User }] })
+    .then((foundRooms) => {
+        let breakLoop = false;
+        for (let room of foundRooms) {
+            if (breakLoop) break;
+            console.log('findRoom: found roomz '+ require('util').inspect(foundRooms))
+            console.log('findRoom: room id '+ room.id)
+            console.log('findRoom: count users '+ room.users.length)
+            if (room.topic === topic && room.users.length < 4) {
+                // it will break the for loop next time because a room is found
+                breakLoop = true;
+                console.log('findRoom: got a match')
+                room.users.push(currentUser);
+                currentUser.roomId = room.id;
+                Promise.all([
+                    room.save(),
+                    currentUser.save()
+                ]).then(() => {
+                    console.log('findRoom: room is savedm,id: ' + room.id)
+                    return(true);
+                }).catch(e => {
+                    console.log('error during adding user to room occured');
+                    console.log(e);
+                }).finally(() => {
+                    User.findOne({where: {id: currentUser.id}}).then((u) => console.log('findRoom: u from search' + require('util').inspect(u)))
+                })
+            }
+        };
+        return(false);
+    }).then((isRoomFound) => {
+        if (!isRoomFound) {
+            console.log("NO ROOM FOUND")
+            // this is a bad way to access users in room (i mean create and find)
+            return Room.create({ include: [{ model: User }] })
+            .then((room) => {
+                return Room.findOne({ 
+                    where: { id: room.id }, include: [{ model: User }] 
+                }).then(async (foundRoom) => {
+                    console.log(foundRoom.users.length)
+                    foundRoom.topic = topic;
+                    foundRoom.users.push(currentUser);
+                    currentUser.roomId = foundRoom.id;
+                    Promise.all([
+                        foundRoom.save(),
+                        currentUser.save()
+                    ]).then(() => {
+                        console.log('findRoom: room created, id: ' + foundRoom.id)
+                        return(true);
+                    }).catch(e => console.log(e))
+                }).catch(e => {
+                    console.log('findRoom: A error during finding room occured')
+                    console.log(e)
+                    return(false);
+                })
+            })
+        } else {
+            return true;
         }
-    };
-    if (isRoomFound === false) {
-        Room.create({ include: [{ model: User }] })
-            .then(async (createdRoom) => {
-                createdRoom.topic = topic;
-                createdRoom.users.push(currentUser);
-                await createdRoom.save();
-                currentUser.roomId = createdRoom.id;
-                await currentUser.save();
-                isRoomFound = true;
-                console.log('findRoom: created room id is ' + createdRoom.id)
-            })
-            .catch(err => {
-                console.log('findRoom: A error during finding room occured')
-                console.log(err)
-                isRoomFound = false;
-            })
-    }
-    return({ isRoomFound: isRoomFound })
+    })
 };
 
 const checkIfReady = async (currentUser) => {
@@ -114,7 +131,7 @@ const checkIfReady = async (currentUser) => {
 
 const debug_createUsers = async () => {
     var users = [];
-    for (let i = 1; i <= 35; i++) {
+    for (let i = 1; i <= 5; i++) {
         users.push({
             username: `test${i}`,
             password: await bcrypt.hash(`test${i}`, 10),
@@ -122,18 +139,18 @@ const debug_createUsers = async () => {
         });
     };
 
-    User.bulkCreate(users)
+    await User.bulkCreate(users)
 };
 
-const debug_updateIsSearchingAll = () => {
-    for (let i = 1; i <= 31; i++) {
+const debug_updateIsSearchingAll = async () => {
+    for (let i = 1; i <= 5; i++) {
         User.findOne({
             where: {
                 username: `test${i}`
             }
-        }).then(foundUser => {
+        }).then(async (foundUser) => {
             foundUser.isSearching = true;
-            foundUser.save();
+            await foundUser.save();
         });
     }
 }
