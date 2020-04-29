@@ -45,61 +45,63 @@ router.post('/mm', async (req, res, next) => {
 const findRoom = (currentUser, topic) => {
     return Room.findAll({ include: [{ model: User }] })
     .then((foundRooms) => {
+        console.log('----START FINDING----')
         let breakLoop = false;
         for (let room of foundRooms) {
             if (breakLoop) break;
-            console.log('findRoom: found roomz '+ require('util').inspect(foundRooms))
-            console.log('findRoom: room id '+ room.id)
-            console.log('findRoom: count users '+ room.users.length)
+            console.log('findRoom: found rooms count: '+ foundRooms.length)
+            console.log('findRoom: room id: '+ room.id)
+            console.log('findRoom: count users: '+ room.users.length)
             if (room.topic === topic && room.users.length < 4) {
                 // it will break the for loop next time because a room is found
                 breakLoop = true;
                 console.log('findRoom: got a match')
                 room.users.push(currentUser);
                 currentUser.roomId = room.id;
-                Promise.all([
+                return Promise.all([
                     room.save(),
                     currentUser.save()
-                ]).then(() => {
-                    console.log('findRoom: room is savedm,id: ' + room.id)
-                    return(true);
-                }).catch(e => {
-                    console.log('error during adding user to room occured');
-                    console.log(e);
-                }).finally(() => {
-                    User.findOne({where: {id: currentUser.id}}).then((u) => console.log('findRoom: u from search' + require('util').inspect(u)))
-                })
+                ])
             }
         };
-        return(false);
+    }).then((resultOfFindingAnyRooms) => {
+        console.log(resultOfFindingAnyRooms)
+        console.log('----STOP FINDING----')
+        if (!resultOfFindingAnyRooms) {
+            return false;
+        } else {
+            return true;
+        };
+    }).catch(e => {
+        console.log('error during adding user to room occured');
+        console.log(e);
     }).then((isRoomFound) => {
         if (!isRoomFound) {
             console.log("NO ROOM FOUND")
-            // this is a bad way to access users in room (i mean create and find)
             return Room.create({ include: [{ model: User }] })
             .then((room) => {
-                return Room.findOne({ 
-                    where: { id: room.id }, include: [{ model: User }] 
-                }).then(async (foundRoom) => {
-                    console.log(foundRoom.users.length)
-                    foundRoom.topic = topic;
-                    foundRoom.users.push(currentUser);
-                    currentUser.roomId = foundRoom.id;
-                    Promise.all([
-                        foundRoom.save(),
-                        currentUser.save()
-                    ]).then(() => {
-                        console.log('findRoom: room created, id: ' + foundRoom.id)
-                        return(true);
-                    }).catch(e => console.log(e))
-                }).catch(e => {
-                    console.log('findRoom: A error during finding room occured')
-                    console.log(e)
-                    return(false);
-                })
+                return Room.findOne({ where: { id: room.id }, include: [{ model: User }]})
+            }).then((foundRoom) => {
+                console.log('----START CREATION----')
+                foundRoom.topic = topic;
+                foundRoom.users.push(currentUser);
+                currentUser.roomId = foundRoom.id;
+                return Promise.all([
+                    foundRoom.save(),
+                    currentUser.save()
+                ]);
+            }).then((resultOfAddingUserToRoom) => {
+                console.log('findRoom: room created, id : ' + resultOfAddingUserToRoom[0])
+                console.log('---STOP CREATION---')
+                return(true);
+            }).catch(e => {
+                console.log('findRoom: A error during creating room occured')
+                console.log(e)
+                return(false);
             })
         } else {
-            return true;
+            console.log('----STOP----')
+            return(true);
         }
     })
 };

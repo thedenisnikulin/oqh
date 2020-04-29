@@ -40,87 +40,86 @@ let hello;
 let p = new Promise((resolve, reject) => {
     setTimeout(() => {
         if (v === true) {
-            resolve('okay')
+            resolve([
+                {u: new Promise((reso) => reso(['u1', 'u2']))}, 
+                {u: new Promise((reso) => reso(['u1', 'u2']))}, 
+                {u: new Promise((reso) => reso(['u1', 'u2']))}, 
+                {u: new Promise((reso) => reso(['u1', 'u2']))}
+            ])
         } else {
             reject('not okay')
         }
     }, 2000)
 });
 
+let pSingle = new Promise((resolve, reject) => {
+    setTimeout(() => {
+        if (v === true) {
+            resolve(
+                {u: new Promise((reso) => reso(['u1', 'u2']))}
+            )
+        } else {
+            reject('not okay')
+        }
+    }, 2000)
+});
 
-let lol = async () => {
-    let res = await p;
-    return(res)
-};
-
-let func = () => {
-    lol().then((o) => {
-        console.log(o)
-        console.log('after promise')
-    })
-}
-
-func()
-
-
-
-const findRoom = (currentUser, topic) => {
-    return Room.findAll({ include: [{ model: User }] })
+const findRoom = () => {
+    return p
     .then((foundRooms) => {
+        console.log('------FINDING')
         let breakLoop = false;
         for (let room of foundRooms) {
             if (breakLoop) break;
-            console.log('findRoom: found roomz '+ require('util').inspect(foundRooms))
-            console.log('findRoom: room id '+ room.id)
-            console.log('findRoom: count users '+ room.users.length)
-            if (room.topic === topic && room.users.length < 4) {
+            console.log('in loop')
+            if (true) {
                 // it will break the for loop next time because a room is found
                 breakLoop = true;
-                console.log('findRoom: got a match')
-                room.users.push(currentUser);
-                currentUser.roomId = room.id;
-                Promise.all([
-                    room.save(),
-                    currentUser.save()
-                ]).then(() => {
-                    console.log('findRoom: room is savedm,id: ' + room.id)
-                    return(true);
-                }).catch(e => {
-                    console.log('error during adding user to room occured');
-                    console.log(e);
-                }).finally(() => {
-                    User.findOne({where: {id: currentUser.id}}).then((u) => console.log('findRoom: u from search' + require('util').inspect(u)))
-                })
+                console.log('FINDING: got a match')
+                return Promise.all([
+                    room.u,
+                ])
             }
         };
-        return(false);
-    }).then((isRoomFound) => {
-        if (!isRoomFound) {
-            // this is a bad way to access users in room (i mean create and find)
-            return Room.create({ include: [{ model: User }] })
-            .then((room) => {
-                return Room.findOne({ 
-                    where: { id: room.id }, include: [{ model: User }] 
-                }).then(async (foundRoom) => {
-                    console.log(foundRoom.users.length)
-                    foundRoom.topic = topic;
-                    foundRoom.users.push(currentUser);
-                    currentUser.roomId = foundRoom.id;
-                    Promise.all([
-                        foundRoom.save(),
-                        currentUser.save()
-                    ]).then(() => {
-                        console.log('findRoom: room created, id: ' + foundRoom.id)
-                        return(true);
-                    }).catch(e => console.log(e))
-                }).catch(e => {
-                    console.log('findRoom: A error during finding room occured')
-                    console.log(e)
-                    return(false);
-                })
-            })
+    }).then((thing) => {
+        console.log('_____FINDING RESULT BELOW');
+        console.log(thing)
+        if (!thing) {
+            return false;
         } else {
             return true;
         }
+        // switch to FALSE to access next 'then'
+    }).catch(e => {
+        console.log('ERROR: during finding a room occured');
+        console.log(e);
+    })
+    .then((isRoomFound) => {
+        if (!isRoomFound) {
+            console.log("no room found")
+            // this is a bad way to access users in room (i mean create and find)
+            return pSingle
+            .then((foundRoom) => {
+                console.log('------CREATION')
+                console.log(foundRoom)
+                return Promise.all([
+                    foundRoom.u,
+                ]);
+            }).then((thing) => {
+                console.log('______CREARTION RESULT BELOW');
+                console.log(thing);
+                return('SUCCESS: CREATING');
+            }).catch(e => {
+                console.log('ERROR: during creation of room occured')
+                console.log(e)
+                return('FAILURE: CREATING');
+            })
+        } else {
+            return('SUCCESS FINDING');
+        }
     })
 };
+
+findRoom().then((value) => {
+    console.log('out of p: ' + value)
+})
