@@ -106,29 +106,39 @@ const findRoom = (currentUser, topic) => {
     })
 };
 
-const checkIfReady = async (currentUser) => {
-    console.log('checkIfReady: user - ' + require('util').inspect(currentUser))
-    let room = await Room.findOne({ 
+const checkIfReady = (currentUser) => {
+    return Room.findOne({
         where: { id: currentUser.roomId },
         include: [{ model: User }]
-    });
-    console.log('checkIfReady: room users -' + require('util').inspect(room.users));
-    if (room.users.length === 4) {
-        let usersInRoom = [];
-        room.users.forEach(user => {
-            usersInRoom.push({
-                id: user.id,
-                username: user.username,
-                bio: user.bio
-            }
-        )});
-        console.log(usersInRoom)
-        console.log('checkIfReady: room\'s ready')
-        return({ isRoomReady: true, room: { id: room.id, topic: room.topic, users: usersInRoom } });
-    } else {
-        console.log('checkIfReady: room\'s not ready')
-        return({ isRoomReady: false });
-    }
+    }).then(room => {
+        console.log('checkIfReady: users in room count: ' + room.users.length);
+        if (room.users.length === 4) {
+            let usersInRoom = [];
+            room.users.forEach(user => {
+                usersInRoom.push({
+                    id: user.id,
+                    username: user.username,
+                    bio: user.bio
+                }
+            )});
+            console.log(usersInRoom)
+            console.log('checkIfReady: room\'s ready')
+            return({ 
+                isRoomReady: true, 
+                room: { 
+                    id: room.id, 
+                    topic: room.topic, 
+                    users: usersInRoom 
+                } 
+            });
+        } else {
+            console.log('checkIfReady: room\'s not ready')
+            return({ isRoomReady: false });
+        }
+    }).catch(e => {
+        console.log('checkIfReady: A error during checking occured');
+        console.log(e)
+    })
 }
 
 const debug_createUsers = async () => {

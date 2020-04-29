@@ -64,62 +64,39 @@ let pSingle = new Promise((resolve, reject) => {
     }, 2000)
 });
 
-const findRoom = () => {
-    return p
-    .then((foundRooms) => {
-        console.log('------FINDING')
-        let breakLoop = false;
-        for (let room of foundRooms) {
-            if (breakLoop) break;
-            console.log('in loop')
-            if (true) {
-                // it will break the for loop next time because a room is found
-                breakLoop = true;
-                console.log('FINDING: got a match')
-                return Promise.all([
-                    room.u,
-                ])
-            }
-        };
-    }).then((thing) => {
-        console.log('_____FINDING RESULT BELOW');
-        console.log(thing)
-        if (!thing) {
-            return false;
-        } else {
-            return true;
-        }
-        // switch to FALSE to access next 'then'
-    }).catch(e => {
-        console.log('ERROR: during finding a room occured');
-        console.log(e);
-    })
-    .then((isRoomFound) => {
-        if (!isRoomFound) {
-            console.log("no room found")
-            // this is a bad way to access users in room (i mean create and find)
-            return pSingle
-            .then((foundRoom) => {
-                console.log('------CREATION')
-                console.log(foundRoom)
-                return Promise.all([
-                    foundRoom.u,
-                ]);
-            }).then((thing) => {
-                console.log('______CREARTION RESULT BELOW');
-                console.log(thing);
-                return('SUCCESS: CREATING');
-            }).catch(e => {
-                console.log('ERROR: during creation of room occured')
-                console.log(e)
-                return('FAILURE: CREATING');
-            })
-        } else {
-            return('SUCCESS FINDING');
-        }
-    })
-};
 
-findRoom().then((value) => {
+const checkIfReady = (currentUser) => {
+    return Room.findOne({
+        where: { id: currentUser.roomId },
+        include: [{ model: User }]
+    }).then(room => {
+        console.log('checkIfReady: users in room count: ' + room.users.length);
+        if (room.users.length === 4) {
+            let usersInRoom = [];
+            room.users.forEach(user => {
+                usersInRoom.push({
+                    id: user.id,
+                    username: user.username,
+                    bio: user.bio
+                }
+            )});
+            console.log(usersInRoom)
+            console.log('checkIfReady: room\'s ready')
+            return({ 
+                isRoomReady: true, 
+                room: { 
+                    id: room.id, 
+                    topic: room.topic, 
+                    users: usersInRoom 
+                } 
+            });
+        } else {
+            console.log('checkIfReady: room\'s not ready')
+            return({ isRoomReady: false });
+        }
+    })   
+}
+
+checkIfReady().then((value) => {
     console.log('out of p: ' + value)
 })
