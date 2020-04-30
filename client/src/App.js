@@ -35,7 +35,6 @@ function App() {
         setAccess(response.data.access)
         setMessage(response.data.message);
         setLoading(false);
-        console.log('from checkToken' + response.data.userData.roomId)
       })
   }
 

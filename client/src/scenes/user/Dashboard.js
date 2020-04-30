@@ -44,25 +44,6 @@ const Dashboard = (props) => {
     }
   }, [room])
 
-  // useEffect(() => {
-  //   // I haven't tested it, maybe it is even unecessary
-  //   fetchRoomId();
-  // }, [])
-
-  // const fetchRoomId = () => {
-  //   // MAY NEED USE OF ASYNC
-  //   axios.post('http://localhost:7000/user/mm', {
-  //     user: { username: userData.username },
-  //     topic: room.topic.toLowerCase(),
-  //     action: 'get_room_id'
-  //   }).then((result) => {
-  //     console.log(result)
-  //     const id = result.data.roomId;
-  //     setIsRoomReady(true);
-  //     setUserData({ ...userData, roomId: id })
-  //   })
-  // };
-
   const fetchPeopleSearching = () => {
     // MAY NEED USE OF ASYNC
     isSearching && axios.post('http://localhost:7000/user/mm', {
@@ -75,15 +56,17 @@ const Dashboard = (props) => {
     })
   }
 
-  const findRoom = async () => {
-    let result = await axios.post('http://localhost:7000/user/mm', {
+  const findRoom = () => {
+    axios.post('http://localhost:7000/user/mm', {
       user: { username: userData.username },
       topic: room.topic.toLowerCase(),
       action: 'find_room'
+    }).then(result => {
+      const data = result.data.isRoomFound;
+      console.log('fr ' + data);
+      setIsRoomFound(data);
     })
-    const data = result.data.isRoomFound;
-    console.log(data);
-    setIsRoomFound(data);
+    
     }
 
   const checkIfReady = async () => {
@@ -129,7 +112,7 @@ const Dashboard = (props) => {
 
      
 
-      { isRoomReady && <Redirect to='/users/room'/> }
+      { isRoomReady && <Redirect to='/user/room'/> }
     </div>
   );
 }

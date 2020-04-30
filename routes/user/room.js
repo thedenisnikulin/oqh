@@ -6,7 +6,15 @@ const Room = require('../../models/index').room;
 const chatMessage = require('../../models/index').chatMessage;
 
 router.post('/room', async (req, res, next) => {
-    
+    const { valueToAdd, user } = req.body;
+    User.update(
+        { rep: rep + valueToAdd },
+        { 
+            where: {
+                username: user.username
+            }
+        }
+    ).catch(e => console.log(e));
 });
 
 io.on('connection', async (client) => {

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Redirect } from 'react-router-dom';
 import axios from 'axios';
 import io from 'socket.io-client';
 
@@ -18,6 +19,7 @@ const Chat = (props) => {
     const { room, setRoom } = props;
     const [ message, setMessage ] = useState('');
     const [ history, setHistory ] = useState([]);
+    const [ isUserLeaving, setIsUserLeaving ] = useState(false);
 
     // initialize data
     useEffect(() => {
@@ -41,6 +43,10 @@ const Chat = (props) => {
         })
     });
 
+    useEffect(() => {
+        leaveRoom();
+    }, [isUserLeaving])
+
     const leaveRoom = async () => {
         if (room.users.length <= 2) {
             socket.emit('disconnectRoom');
@@ -48,13 +54,6 @@ const Chat = (props) => {
         setRoom({ ...room, users: room.users.filter((user) => user.username !== userData.username) });
         setUserData({ ...userData, roomId: '' });
         socket.emit('disconnectUser', userData.username);
-    }
-
-    const handleLeaveRoom = (e) => {
-        e.preventDefault();
-        leaveRoom();
-        // didn't tested this
-        props.history.push('/user/dashboard');
     }
 
     const handleSubmit = (e) => {
@@ -84,7 +83,43 @@ const Chat = (props) => {
                 <input onChange={handleChange} value={message}/>
                 <button>submit</button>
             </form>
-            <button value='leave' onClick={handleLeaveRoom} />
+            <button value='leave' onClick={() => setIsUserLeaving(true)} />
+            { isUserLeaving && <UsersFeedback roomState={ props.roomState } /> }
+        </div>
+    );
+}
+
+const UsersFeedback = (props) => {
+    const { room, setRoom } = props.roomState;
+    const [ feedbackCount, setFeedbackCount ] = useState(0);
+    const [ isRedirect, setIsRedirect ] = useState(false);
+
+    const handleClick = (valueToAdd, user) => {
+        axios.post('http://localhost:7000/user/room', {
+            valueToAdd: valueToAdd,
+            user: user,
+        }).then(() => {
+            setFeedbackCount(feedbackCount+1);
+        })
+    }
+
+    return(
+        <div>
+            {
+                room.users.map(user =>
+                    <div>
+                        <div>
+                            { user.username }
+                        </div>
+                        <div>
+                            <button onClick={ () => handleClick(1, user) }>up</button>
+                            <button onClick={ () => handleClick(-1, user) }>down</button>
+                        </div>
+                    </div>
+                )
+            }
+            { feedbackCount === 4 && <input type='button' value='go back' onClick={ () => setIsRedirect(true) } /> }
+            { isRedirect && <Redirect to="user/dashboard" /> }
         </div>
     );
 }

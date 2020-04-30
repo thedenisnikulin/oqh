@@ -18,14 +18,12 @@ router.post('/mm', async (req, res, next) => {
             await userData.save()
             let isRoomFound = await findRoom(userData, topic)
             console.log('mm main: room found')
-            console.log(isRoomFound)
-            res.json(isRoomFound)
+            res.json({ isRoomFound })
             break;
         case 'check_if_ready':
-            let isRoomReady = await checkIfReady(userData);
+            let roomDataContainer = await checkIfReady(userData);
             console.log('mm main: room checked') 
-            console.log(isRoomReady)     
-            res.json(isRoomReady);
+            res.json(roomDataContainer);
             break;
         case 'get_room_id':
             res.json(userData.roomId)
@@ -41,6 +39,16 @@ router.post('/mm', async (req, res, next) => {
             break;
     }
 });
+/* 
+----START FINDING----
+[server] findRoom: found rooms count: 2
+[server] findRoom: room id: 3733e808-fae7-4146-b809-14dcaa35abb9
+[server] findRoom: count users: 1
+[server] findRoom: found rooms count: 2
+[server] findRoom: room id: 63e66659-f23a-491c-a810-bec9272722ab
+[server] findRoom: count users: 0
+[server] findRoom: got a match
+*/
 
 const findRoom = (currentUser, topic) => {
     return Room.findAll({ include: [{ model: User }] })
@@ -65,7 +73,6 @@ const findRoom = (currentUser, topic) => {
             }
         };
     }).then((resultOfFindingAnyRooms) => {
-        console.log(resultOfFindingAnyRooms)
         console.log('----STOP FINDING----')
         if (!resultOfFindingAnyRooms) {
             return false;
@@ -111,6 +118,7 @@ const checkIfReady = (currentUser) => {
         where: { id: currentUser.roomId },
         include: [{ model: User }]
     }).then(room => {
+        console.log(room);
         console.log('checkIfReady: users in room count: ' + room.users.length);
         if (room.users.length === 4) {
             let usersInRoom = [];
