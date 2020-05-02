@@ -17,7 +17,7 @@ const Dashboard = (props) => {
 
   const [ usersSearching, setUsersSearching ] = useState();
 
-  const [ delay, setDelay ] = useState(3000);
+  const [ delay, setDelay ] = useState(5000);
 
   useInterval(async () => {
     //fetchPeopleSearching();
@@ -96,6 +96,7 @@ const Dashboard = (props) => {
 
   return (
     <div>
+      <div>{ userData.username }</div>
       <input 
         value={room.topic} 
         onChange={(e) => setRoom({ ...room, topic: e.target.value })} 

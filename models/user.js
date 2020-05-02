@@ -17,6 +17,11 @@ module.exports = (sequelize, type) => {
         bio: {
             type: type.STRING,
         },
+        rep: {
+            type: type.INTEGER,
+            defaultValue: 1,
+            allowNull: false,
+        },
         isSearching: {
             type: type.BOOLEAN,
             defaultValue: false

@@ -9,19 +9,19 @@ const Room = (props) => {
     
     return(
         <div>
-            <Chat userDataState={props.userDataState}/>
+            <Chat userDataState={props.userDataState} roomState={props.roomState}/>
         </div>
     );
 };
 
 const Chat = (props) => {
-    const { userData, setUserData } = props;
-    const { room, setRoom } = props;
+    const { userData, setUserData } = props.userDataState;
+    const { room, setRoom } = props.roomState;
     const [ message, setMessage ] = useState('');
     const [ history, setHistory ] = useState([]);
     const [ isUserLeaving, setIsUserLeaving ] = useState(false);
 
-    // initialize data
+    // initialize data on mount
     useEffect(() => {
         socket = io.connect('http://localhost:8000');
         console.log(userData)
@@ -42,12 +42,14 @@ const Chat = (props) => {
             setHistory([...history, msg])
         })
     });
-
+    // listen to "leave" event
     useEffect(() => {
         leaveRoom();
+        console.log(userData)
     }, [isUserLeaving])
 
-    const leaveRoom = async () => {
+    const leaveRoom = () => {
+        // clean up room if no users
         if (room.users.length <= 2) {
             socket.emit('disconnectRoom');
         }
@@ -83,25 +85,29 @@ const Chat = (props) => {
                 <input onChange={handleChange} value={message}/>
                 <button>submit</button>
             </form>
-            <button value='leave' onClick={() => setIsUserLeaving(true)} />
-            { isUserLeaving && <UsersFeedback roomState={ props.roomState } /> }
+            <button onClick={() => setIsUserLeaving(true)}>leave</button>
+            { isUserLeaving && <UsersFeedback userData={userData} roomState={ props.roomState } /> }
         </div>
     );
 }
 
 const UsersFeedback = (props) => {
+    const { userData } = props.userData;
     const { room, setRoom } = props.roomState;
     const [ feedbackCount, setFeedbackCount ] = useState(0);
     const [ isRedirect, setIsRedirect ] = useState(false);
 
-    const handleClick = (valueToAdd, user) => {
-        axios.post('http://localhost:7000/user/room', {
+    const handleClick = async (valueToAdd, user) => {
+        await axios.post('http://localhost:7000/user/room', {
             valueToAdd: valueToAdd,
             user: user,
-        }).then(() => {
-            setFeedbackCount(feedbackCount+1);
-        })
-    }
+        });
+        setFeedbackCount(feedbackCount + 1);
+    };
+
+    useEffect(() => {
+        console.log(feedbackCount)
+    }, [feedbackCount])
 
     return(
         <div>
@@ -118,7 +124,7 @@ const UsersFeedback = (props) => {
                     </div>
                 )
             }
-            { feedbackCount === 4 && <input type='button' value='go back' onClick={ () => setIsRedirect(true) } /> }
+            { feedbackCount === 3 && <input type='button' value='go back' onClick={ () => setIsRedirect(true) } /> }
             { isRedirect && <Redirect to="user/dashboard" /> }
         </div>
     );

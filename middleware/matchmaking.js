@@ -39,16 +39,7 @@ router.post('/mm', async (req, res, next) => {
             break;
     }
 });
-/* 
-----START FINDING----
-[server] findRoom: found rooms count: 2
-[server] findRoom: room id: 3733e808-fae7-4146-b809-14dcaa35abb9
-[server] findRoom: count users: 1
-[server] findRoom: found rooms count: 2
-[server] findRoom: room id: 63e66659-f23a-491c-a810-bec9272722ab
-[server] findRoom: count users: 0
-[server] findRoom: got a match
-*/
+
 
 const findRoom = (currentUser, topic) => {
     return Room.findAll({ include: [{ model: User }] })
@@ -62,7 +53,7 @@ const findRoom = (currentUser, topic) => {
             console.log('findRoom: count users: '+ room.users.length)
             if (room.topic === topic && room.users.length < 4) {
                 // it will break the for loop next time because a room is found
-                breakLoop = true;
+                breakLoop = true; 
                 console.log('findRoom: got a match')
                 room.users.push(currentUser);
                 currentUser.roomId = room.id;
@@ -118,7 +109,8 @@ const checkIfReady = (currentUser) => {
         where: { id: currentUser.roomId },
         include: [{ model: User }]
     }).then(room => {
-        console.log(room);
+        console.log('checkIfReady: user id: ' + currentUser.username)
+        console.log('checkIfReady: room id: ' + room.id);
         console.log('checkIfReady: users in room count: ' + room.users.length);
         if (room.users.length === 4) {
             let usersInRoom = [];
@@ -129,8 +121,8 @@ const checkIfReady = (currentUser) => {
                     bio: user.bio
                 }
             )});
-            console.log(usersInRoom)
             console.log('checkIfReady: room\'s ready')
+            console.log(usersInRoom)
             return({ 
                 isRoomReady: true, 
                 room: { 
