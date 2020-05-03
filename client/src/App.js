@@ -22,7 +22,8 @@ function App() {
   const [ room, setRoom ] = useState({ 
     id: '', 
     topic: '', 
-    users: [] 
+    users: [],
+    isReady: false
   });
   const [ access, setAccess ] = useState();
   const [ loading, setLoading ] = useState(true);

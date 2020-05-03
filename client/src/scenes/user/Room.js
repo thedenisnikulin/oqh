@@ -28,8 +28,7 @@ const Chat = (props) => {
         socket.emit('connectRoom', userData.roomId);
         socket.emit('init');
         socket.on('init', (initData) => {
-            setHistory(initData.messages)
-            setRoom({ ...room, users: initData.users });
+            setHistory(initData.messages);
         })
         return () => {
             leaveRoom();
@@ -42,21 +41,30 @@ const Chat = (props) => {
             setHistory([...history, msg])
         })
     });
+
     // listen to "leave" event
     useEffect(() => {
         leaveRoom();
         console.log(userData)
     }, [isUserLeaving])
 
+
     const leaveRoom = () => {
         // clean up room if no users
         if (room.users.length <= 2) {
             socket.emit('disconnectRoom');
         }
-        setRoom({ ...room, users: room.users.filter((user) => user.username !== userData.username) });
+        let arr = room.users;
+        console.log(room.users)
+        console.log(arr)
+        arr = room.users.filter((user) => user.username !== userData.username);
+        console.log(arr)
+        arr = arr.map(u => { u.isRated = false; return u });
+        console.log(arr)
+        setRoom({ ...room, id: '', users: arr, isReady: false });
         setUserData({ ...userData, roomId: '' });
         socket.emit('disconnectUser', userData.username);
-    }
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -64,13 +72,13 @@ const Chat = (props) => {
             message,
             sender: userData,
         }
-        socket.emit('message', msg)
+        socket.emit('message', msg);
         setMessage('');
     }
     const handleChange = (e) => {
         e.preventDefault();
-        setMessage(e.target.value)
-    }
+        setMessage(e.target.value);
+    };
 
     return(
         <div>
@@ -86,28 +94,32 @@ const Chat = (props) => {
                 <button>submit</button>
             </form>
             <button onClick={() => setIsUserLeaving(true)}>leave</button>
-            { isUserLeaving && <UsersFeedback userData={userData} roomState={ props.roomState } /> }
+            { isUserLeaving && <RateUsers userData={userData} roomState={ props.roomState } /> }
         </div>
     );
 }
 
-const UsersFeedback = (props) => {
-    const { userData } = props.userData;
+const RateUsers = (props) => {
+    const userData = props.userData;
     const { room, setRoom } = props.roomState;
     const [ feedbackCount, setFeedbackCount ] = useState(0);
     const [ isRedirect, setIsRedirect ] = useState(false);
 
     const handleClick = async (valueToAdd, user) => {
+        setFeedbackCount(feedbackCount + 1);
+        let arr = room.users;
+        for (let i = 0; i < arr.length; i++) {
+            if (arr[i].username === user.username) {
+                arr[i].isRated = true;
+                break;
+            };
+        };
+        setRoom({ ...room, users: arr });
         await axios.post('http://localhost:7000/user/room', {
             valueToAdd: valueToAdd,
             user: user,
         });
-        setFeedbackCount(feedbackCount + 1);
     };
-
-    useEffect(() => {
-        console.log(feedbackCount)
-    }, [feedbackCount])
 
     return(
         <div>
@@ -117,15 +129,17 @@ const UsersFeedback = (props) => {
                         <div>
                             { user.username }
                         </div>
-                        <div>
-                            <button onClick={ () => handleClick(1, user) }>up</button>
-                            <button onClick={ () => handleClick(-1, user) }>down</button>
-                        </div>
+                        {
+                            !user.isRated ? <div>
+                                <button onClick={ () => handleClick(1, user) }>up</button>
+                                <button onClick={ () => handleClick(-1, user) }>down</button>
+                            </div> : <div>rated</div>
+                        }
                     </div>
                 )
             }
             { feedbackCount === 3 && <input type='button' value='go back' onClick={ () => setIsRedirect(true) } /> }
-            { isRedirect && <Redirect to="user/dashboard" /> }
+            { isRedirect && <Redirect to="/user/dashboard" /> }
         </div>
     );
 }

@@ -13,40 +13,42 @@ const Dashboard = (props) => {
 
   const [ isSearching, setIsSearching ] = useState(false);
   const [ isRoomFound, setIsRoomFound ] = useState(false);
-  const [ isRoomReady, setIsRoomReady ] = useState(false);
 
   const [ usersSearching, setUsersSearching ] = useState();
 
-  const [ delay, setDelay ] = useState(5000);
+  const [ delay, setDelay ] = useState(3000);
 
   useInterval(async () => {
     //fetchPeopleSearching();
     if (!isRoomFound) {
       await findRoom();
       console.log('i found it')
-    } else if (!isRoomReady){
+    } else if (!room.isReady){
       await checkIfReady();
       console.log('i checked it')
     }
   }, isSearching ? delay : null);
 
   useEffect(() => {
+    console.log(room)
+  }, [])
+
+  useEffect(() => {
     console.log('room id after set ' + room.id);
     console.log(`LOG:\nuserdata: ${require('util').inspect(userData)}\nroom: ${require('util').inspect(room)}\nflags: ${require('util').inspect({
       search: isSearching,
       found: isRoomFound,
-      ready: isRoomReady
+      ready: room.isReady
     })}`);
     if (room.id !== '') {
       setIsSearching(false);
-      setIsRoomReady(true);
+      setRoom({ ...room, isReady: true })
       setUserData({ ...userData, roomId: room.id })
     }
-  }, [room])
+  }, [room]);
 
   const fetchPeopleSearching = () => {
-    // MAY NEED USE OF ASYNC
-    isSearching && axios.post('http://localhost:7000/user/mm', {
+    axios.post('http://localhost:7000/user/mm', {
       user: { username: userData.username },
       topic: room.topic.toLowerCase(),
       action: 'get_people_searching'
@@ -66,8 +68,7 @@ const Dashboard = (props) => {
       console.log('fr ' + data);
       setIsRoomFound(data);
     })
-    
-    }
+  }
 
   const checkIfReady = async () => {
     let result = await axios.post('http://localhost:7000/user/mm', {
@@ -81,6 +82,7 @@ const Dashboard = (props) => {
     if (data.isRoomReady) {
       console.log('room id before set' + require('util').inspect(room.id))
       setRoom(data.room);
+      setRoom({ ...room, isReady: false });
     }
   };
 
@@ -113,7 +115,7 @@ const Dashboard = (props) => {
 
      
 
-      { isRoomReady && <Redirect to='/user/room'/> }
+      { room.isReady && <Redirect to='/user/room'/> }
     </div>
   );
 }
@@ -122,7 +124,7 @@ const Timer = (props) => {
   const { isSearching } = props;
   const [timer, setTimer] = useState([0, 0]);
   useInterval(() => {
-    // this is somehow ont working
+    // this is somehow not working
     if (timer[1] === 60) setTimer([timer[0]+1, timer[1]]);
     setTimer([timer[0], timer[1]+1]);
   }, isSearching ? 1000 : null);

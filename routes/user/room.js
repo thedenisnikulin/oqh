@@ -28,28 +28,20 @@ io.on('connection', async (client) => {
         let usersInRoom = await User.findAll({ where: { roomId } });
         
         let readyMessages = [];
-        let safeUsers = [];
-        usersInRoom.forEach(user => {
-            user = {
-                id: user.dataValues.id,
-                username: user.dataValues.username,
-                bio: user.dataValues.bio
-            };
-            safeUsers.push(user);
-        });
+        
         chatMessagesInRoom.map(msg => {
-            for(let i=0; i<safeUsers.length; i++) {
-                if (safeUsers[i].id === msg.senderId) {
+            for(let i = 0; i < usersInRoom.length; i++) {
+                if (usersInRoom[i].dataValues.id === msg.senderId) {
                     readyMessages.push({
                         message: msg.dataValues.message,
-                        sender: safeUsers[i]
+                        sender: usersInRoom[i].dataValues.username
                     })
                 }
             }
         });
         console.log('SOCKET: init messages ' + require('util').inspect(readyMessages))
-        console.log('SOCKET: users count ' + require('util').inspect(safeUsers.length))
-        client.emit('init', { users: safeUsers, messages: readyMessages })
+        console.log('SOCKET: users count ' + require('util').inspect(usersInRoom.length))
+        client.emit('init', { messages: readyMessages });
     });
 
     client.on('connectRoom', (room) => {
