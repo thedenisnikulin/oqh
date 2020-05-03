@@ -23,7 +23,7 @@ const Chat = (props) => {
 
     // initialize data on mount
     useEffect(() => {
-        socket = io.connect('http://localhost:8000');
+        socket = io.connect('http://localhost:7000');
         console.log(userData)
         socket.emit('connectRoom', userData.roomId);
         socket.emit('init');
@@ -115,7 +115,7 @@ const RateUsers = (props) => {
             };
         };
         setRoom({ ...room, users: arr });
-        await axios.post('http://localhost:7000/user/room', {
+        await axios.post('http://localhost:7000/room', {
             valueToAdd: valueToAdd,
             user: user,
         });
@@ -139,7 +139,7 @@ const RateUsers = (props) => {
                 )
             }
             { feedbackCount === 3 && <input type='button' value='go back' onClick={ () => setIsRedirect(true) } /> }
-            { isRedirect && <Redirect to="/user/dashboard" /> }
+            { isRedirect && <Redirect to="/dashboard" /> }
         </div>
     );
 }

@@ -8,7 +8,6 @@ const Protected = ({ children, checkToken, access, loading, ...rest }) => {
     checkToken();
   }, []);
 
-  console.log(access);
     return (
       <div>
         <Route {...rest} render={(props) => {

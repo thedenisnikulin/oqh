@@ -1,11 +1,11 @@
-const express = require('express');
-const router = express.Router();
 const bcrypt = require('bcryptjs');
 
 const User = require('../models/index').user;
 const Room = require('../models/index').room;
 
-router.post('/mm', async (req, res, next) => {
+// TODO: separate routes with params handling each case instead of switch-case
+
+module.exports = async (req, res, next) => {
     const { user, topic, action } = req.body;
     // debug_createUsers().then(() => {
     //     debug_updateIsSearchingAll();
@@ -38,7 +38,7 @@ router.post('/mm', async (req, res, next) => {
             await userData.save();
             break;
     }
-});
+};
 
 
 const findRoom = (currentUser, topic) => {
@@ -139,7 +139,7 @@ const checkIfReady = (currentUser) => {
         console.log('checkIfReady: A error during checking occured');
         console.log(e)
     })
-}
+};
 
 const debug_createUsers = async () => {
     var users = [];
@@ -166,5 +166,3 @@ const debug_updateIsSearchingAll = async () => {
         });
     }
 }
-
-module.exports = router

@@ -48,7 +48,7 @@ const Dashboard = (props) => {
   }, [room]);
 
   const fetchPeopleSearching = () => {
-    axios.post('http://localhost:7000/user/mm', {
+    axios.post('http://localhost:7000/mm', {
       user: { username: userData.username },
       topic: room.topic.toLowerCase(),
       action: 'get_people_searching'
@@ -59,7 +59,7 @@ const Dashboard = (props) => {
   }
 
   const findRoom = () => {
-    axios.post('http://localhost:7000/user/mm', {
+    axios.post('http://localhost:7000/mm', {
       user: { username: userData.username },
       topic: room.topic.toLowerCase(),
       action: 'find_room'
@@ -71,7 +71,7 @@ const Dashboard = (props) => {
   }
 
   const checkIfReady = async () => {
-    let result = await axios.post('http://localhost:7000/user/mm', {
+    let result = await axios.post('http://localhost:7000/mm', {
       user: { username: userData.username },
       topic: room.topic.toLowerCase(),
       action: 'check_if_ready'
@@ -89,7 +89,7 @@ const Dashboard = (props) => {
   const breakSearch = async (e) => {
     e.preventDefault();
     setIsSearching(false);
-    await axios.post('http://localhost:7000/user/mm', {
+    await axios.post('http://localhost:7000/mm', {
       user: { username: userData.username },
       topic: room.topic.toLowerCase(),
       action: 'break'
@@ -115,7 +115,7 @@ const Dashboard = (props) => {
 
      
 
-      { room.isReady && <Redirect to='/user/room'/> }
+      { room.isReady && <Redirect to='/room'/> }
     </div>
   );
 }

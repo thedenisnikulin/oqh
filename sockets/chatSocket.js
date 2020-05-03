@@ -1,24 +1,15 @@
-const router = require('express').Router();
-const io = require('socket.io').listen(8000);
 
-const User = require('../../models/index').user;
-const Room = require('../../models/index').room;
-const chatMessage = require('../../models/index').chatMessage;
+const Room = require('../models/index').room;
+const chatMessage = require('../models/index').chatMessage;
 
-router.post('/room', async (req, res, next) => {
-    const { valueToAdd, user } = req.body;
-    console.log('rep: to add: ' + valueToAdd);
-    console.log('rep: u: ')
-    console.log(user)
+let sockets = {};
 
-    User.findOne({ where: { username: user.username } })
-        .then(async (u) => {
-            u.rep = u.rep + valueToAdd;
-            await u.save();
-        }).catch(e => console.log(e))
-});
+sockets.init = (server, func) => {
+    sockets.io = require('socket.io').listen(server);
+    sockets.io.on('connection', func)
+}
 
-io.on('connection', async (client) => {
+sockets.main = async (client) => {
     let roomId;
     console.log('SOCKET: user joined');
 
@@ -57,7 +48,7 @@ io.on('connection', async (client) => {
             roomId
         });
         
-        io.to(roomId).emit('message', {
+        sockets.io.to(roomId).emit('message', {
             message: msg.message,
             sender: msg.sender
         });         
@@ -75,6 +66,6 @@ io.on('connection', async (client) => {
         user.roomId = null;
         await userData.save();
     })
-})
+};
 
-module.exports = router;
+module.exports = sockets;

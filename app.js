@@ -4,6 +4,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const sequelize = require('./models/index').sequelize;
 
+const sockets = require('./sockets/chatSocket');
 const checkToken = require('./middleware/checkToken');
 
 
@@ -20,14 +21,14 @@ app.use(bodyParser.json());
 app.use((cors({credentials: true, origin: true})))
 
 // Routes
-app.use('/', require('./routes/home'))
+app.post('/login', require('./controllers/loginController'));
+app.post('/register', require('./controllers/registerController'));
+app.post('/mm', require('./controllers/matchmakingController'));
 
-app.use('/user', require('./routes/user/auth'))
-app.use('/user', require('./routes/user/dashboard'));
-app.use('/user', require('./middleware/matchmaking'));
-app.use('/user', require('./routes/user/room'));
-
-app.get('/user/check-token', checkToken)
+app.get('/check-token', checkToken)
 
 const port = process.env.PORT;
-app.listen(port, () => console.log('the server is running on port ' + port));
+const server = app.listen(port, () => console.log('the server is running on port ' + port));
+
+// sockets
+sockets.init(server, sockets.main);
