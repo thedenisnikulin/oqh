@@ -31,6 +31,6 @@ db.chatMessage.belongsTo(db.room);
 db.sequelize.sync()
   .then(() => {
     console.log('Databases & tables synced')
-});
+  }).catch(e => console.log(e));
 
 module.exports = db;
