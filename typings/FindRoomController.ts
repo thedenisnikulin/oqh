@@ -1,5 +1,6 @@
 import AbstractController from './AbstractController';
-import Matchmaking, { IUserData, IRoomData } from './types';
+import { IUserData, IRoomData } from './types';
+import Matchmaking from './Matchmaking';
 
 export default class FindRoomController extends AbstractController {
     readonly path: string = '/mm/find-room';

@@ -14,7 +14,7 @@ const middlewares: Array<RequestHandler> = [
     require('body-parser')
 ]
 
-const server: Server = new Server(app, sequelize, 9000);
+const server: Server = new Server(app, sequelize, parseInt(<string>process.env.PORT));
 
 server.loadControllers(controllers);
 server.loadMiddlewares(middlewares);
