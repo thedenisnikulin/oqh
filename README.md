@@ -2,5 +2,5 @@
 A full-stack app
 
 ### TODO
-- [ ] move project to TypeScript
-- [ ] add more OOP stuff
+- [x] move project to TypeScript - https://github.com/thedenisnikulin/oqh-typescript
+- [x] add more OOP stuff
