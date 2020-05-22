@@ -19,7 +19,7 @@ const Dashboard = (props) => {
   const [ delay, setDelay ] = useState(3000);
 
   useInterval(async () => {
-    //fetchPeopleSearching();
+    fetchPeopleSearching();
     if (!isRoomFound) {
       await findRoom();
       console.log('i found it')
@@ -28,7 +28,7 @@ const Dashboard = (props) => {
       console.log('i checked it')
     }
   }, isSearching ? delay : null);
-
+  
   useEffect(() => {
     console.log(room)
   }, [])
@@ -48,35 +48,29 @@ const Dashboard = (props) => {
   }, [room]);
 
   const fetchPeopleSearching = () => {
-    axios.post('http://localhost:7000/mm', {
-      user: { username: userData.username },
-      topic: room.topic.toLowerCase(),
-      action: 'get_people_searching'
-    }).then(result => {
-      const data = result.data.usersSearching;
-      setUsersSearching(data)
-    })
+    axios.get('http://localhost:7000/mm/get-users-searching')
+      .then(result => {
+        const data = result.data.usersSearching;
+        setUsersSearching(data)
+      })
   }
 
   const findRoom = () => {
-    axios.post('http://localhost:7000/mm', {
-      user: { username: userData.username },
-      topic: room.topic.toLowerCase(),
-      action: 'find_room'
+    axios.post('http://localhost:7000/mm/find-room', {
+      topic: room.topic.toLowerCase()
     }).then(result => {
-      const data = result.data.isRoomFound;
-      console.log('fr ' + data);
-      setIsRoomFound(data);
+      console.log(result)
+      const data = result.data.data;
+      console.log('fr ' + data.isRoomFound);
+      setIsRoomFound(data.isRoomFound);
     })
   }
 
   const checkIfReady = async () => {
-    let result = await axios.post('http://localhost:7000/mm', {
-      user: { username: userData.username },
+    let result = await axios.post('http://localhost:7000/mm/confirm-room-readiness', {
       topic: room.topic.toLowerCase(),
-      action: 'check_if_ready'
     })
-    const data = result.data;
+    const data = result.data.data;
     console.log(data)
     console.log('we are here')
     if (data.isRoomReady) {
@@ -89,11 +83,7 @@ const Dashboard = (props) => {
   const breakSearch = async (e) => {
     e.preventDefault();
     setIsSearching(false);
-    await axios.post('http://localhost:7000/mm', {
-      user: { username: userData.username },
-      topic: room.topic.toLowerCase(),
-      action: 'break'
-    });
+    await axios.post('http://localhost:7000/mm/break-search');
   }
 
   return (

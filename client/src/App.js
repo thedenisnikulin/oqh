@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import axios from 'axios';
 
 import Home from './components/home/Home';
@@ -12,7 +12,7 @@ import Room from './components/room/Room'
 
 const App = () => {
 
-  axios.defaults.headers.common['Authorization'] = 'Bearer' + ' ' + localStorage.getItem('accessToken');
+  axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('accessToken')}`
 
   const [ userData, setUserData ] = useState({
     username: null,
@@ -30,13 +30,18 @@ const App = () => {
   const [ loading, setLoading ] = useState(true);
   const [ message, setMessage ] = useState();
 
-  const checkToken = async () => {
-    await axios.get('http://localhost:7000/check-token')
+  const verifyToken = async () => {
+    console.log('before')
+    console.log(axios.defaults.headers.common['Authorization']);
+    await axios.post('http://localhost:7000/token')
       .then(response => {
-        setUserData(response.data.userData);
-        setAccess(response.data.access)
-        setMessage(response.data.message);
+        console.log(response)
+        const data = response.data.data.tokenVerificationData;
+        data.user && setUserData(data.user);
+        data.message && setMessage(data.message);
+        setAccess(data.access)
         setLoading(false);
+        console.log('after')
       })
   }
 
@@ -56,12 +61,12 @@ const App = () => {
           render={(props) => <Register userDataState={{ userData, setUserData }} messageState={{ message, setMessage }} />} 
         />
 
-        <Protected exact path='/dashboard' checkToken={checkToken} access={access} loading={loading}>
+        <Protected exact path='/dashboard' verifyToken={verifyToken} access={access} loading={loading}>
           <Dashboard userDataState={{ userData, setUserData }} roomState={{ room, setRoom }} />
           <Logout />
         </Protected>
 
-        <Protected exact path='/room' checkToken={checkToken} access={access} loading={loading}>
+        <Protected exact path='/room' verifyToken={verifyToken} access={access} loading={loading}>
           <Room userDataState={{ userData, setUserData }} roomState={{ room, setRoom }}/>
         </Protected>
 

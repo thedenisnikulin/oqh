@@ -17,16 +17,16 @@ export const Login = (props) => {
       username: userData.username,
       password: userData.password 
     })
-      .then(result => {
-        console.log(result)
-        if (result.data.message) {
-          setMessage(result.data.message);
+      .then(response => {
+        const data = response.data
+        console.log(data)
+        if (data.error) {
+          setMessage(data.error);
         } else {
-            localStorage.setItem('accessToken', result.data.data.jwt);
+            localStorage.setItem('accessToken', data.data.jwt);
             setUserData({
-              username: result.data.data.user.username,
-              password: null,
-              bio: result.data.data.user.bio
+              username: data.data.user.username,
+              bio: data.data.user.bio
             });
             setMessage('success');
         }

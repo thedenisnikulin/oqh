@@ -50,7 +50,7 @@ const Chat = (props) => {
 
 
     const leaveRoom = () => {
-        // clean up room if no users
+        // clean up room if no users in the room
         if (room.users.length <= 2) {
             socket.emit('disconnectRoom');
         }
@@ -115,7 +115,7 @@ const RateUsers = (props) => {
             };
         };
         setRoom({ ...room, users: arr });
-        await axios.post('http://localhost:7000/room', {
+        await axios.post('http://localhost:7000/room/add-rep', {
             valueToAdd: valueToAdd,
             user: user,
         });

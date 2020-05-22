@@ -1,11 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Route, Redirect } from 'react-router-dom';
-import axios from 'axios';
 
-
-const Protected = ({ children, checkToken, access, loading, ...rest }) => {
+const Protected = ({ children, verifyToken, access, loading, ...rest }) => {
   useEffect(() => {
-    checkToken();
+    verifyToken();
   }, []);
 
     return (
