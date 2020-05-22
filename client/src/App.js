@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core'
+import { green } from '@material-ui/core/colors/green';
 import axios from 'axios';
 
 import Home from './components/home/Home';
@@ -13,7 +15,11 @@ import Room from './components/room/Room'
 const App = () => {
 
   axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('accessToken')}`
-
+  const theme = createMuiTheme({
+    palette: {
+      primary: green
+    }
+  })
   const [ userData, setUserData ] = useState({
     username: null,
     password: null,
@@ -46,7 +52,8 @@ const App = () => {
   }
 
   return (
-    <Router>
+    <MuiThemeProvider theme={theme}>
+      <Router>
       <Switch>
 
         <Route exact path="/">
@@ -72,6 +79,7 @@ const App = () => {
 
       </Switch>
     </Router>
+    </MuiThemeProvider>
   );
 }
 

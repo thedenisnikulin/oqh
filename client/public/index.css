@@ -1,0 +1,49 @@
+body {
+    margin: 0;
+}
+
+.primary-button {
+    background-color: #74D69D;
+};
+
+.auth-wrap {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.split {
+    height: 100%;
+    width: 50%;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    overflow-x: hidden;
+    padding-top: 20px;
+}
+
+.left {
+    left: 0;
+}
+
+.right {
+    right: 0;
+}
+
+.split-rect {
+    background-color: #EDF2F7;
+}
+
+.centered {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.form-wrap {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around
+}
