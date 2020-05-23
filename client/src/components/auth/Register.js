@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useHistory, Link } from 'react-router-dom';
 import axios from 'axios';
 
-const Register = (props) => {
+export const Register = (props) => {
+    const history = useHistory();
     const { userData, setUserData }= props.userDataState;
     const { message, setMessage } = props.messageState;
   
@@ -22,15 +24,16 @@ const Register = (props) => {
           console.log(data)
           if (data.error) {
             setMessage(data.error);
-          } else {
-              localStorage.setItem('accessToken', data.data.jwt);
-              setUserData({
-                username: data.data.user.username,
-                bio: data.data.user.bio
-              });
-              setMessage('success');
-          }
-      })
+          } else if (data.success) {
+            localStorage.setItem('accessToken', data.data.jwt);
+            setUserData({
+              username: data.data.user.username,
+              bio: data.data.user.bio
+            });
+            history.push('/dashboard')
+          };
+          setMessage(data.message)
+        })
     }
   
     return (
@@ -61,8 +64,7 @@ const Register = (props) => {
           />
           <input type='submit' value='Sign up'/>
         </form>
+        <div>Already registered? {<Link to="/login">Login</Link>}</div>
       </div>
     );
 };
-
-export default Register;

@@ -1,8 +1,10 @@
 import React from 'react';
+import { useHistory, Link } from 'react-router-dom';
 import axios from 'axios';
 import { TextField, Button } from '@material-ui/core'
 
 export const Login = (props) => {
+  let history = useHistory();
   const { userData, setUserData }= props.userDataState;
   const { message, setMessage } = props.messageState;
 
@@ -22,14 +24,15 @@ export const Login = (props) => {
         console.log(data)
         if (data.error) {
           setMessage(data.error);
-        } else {
-            localStorage.setItem('accessToken', data.data.jwt);
-            setUserData({
-              username: data.data.user.username,
-              bio: data.data.user.bio
-            });
-            setMessage('success');
-        }
+        } else if (data.success) {
+          localStorage.setItem('accessToken', data.data.jwt);
+          setUserData({
+            username: data.data.user.username,
+            bio: data.data.user.bio
+          });
+          history.push('/dashboard')
+        };
+        setMessage(data.message)
       })
   }
 
@@ -46,6 +49,7 @@ export const Login = (props) => {
             <Button fullWidth style={{backgroundColor: "#74D69D"}} variant="contained" type="submit" color="primary">Log in</Button>
             </div>
           </form>
+          <div>Don't have an accout? {<Link to="/register">Register</Link>}</div>
         </div>
         
     	</div>
@@ -69,4 +73,4 @@ export const Logout = (props) => {
       <button onClick={handleClick}>Log out</button>
     </div>
   );
-}
+};

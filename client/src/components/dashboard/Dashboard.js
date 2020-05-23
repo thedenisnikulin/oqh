@@ -4,9 +4,6 @@ import axios from 'axios';
 
 import useInterval from '../../hooks/useInterval'
 
-// every request to /mm makes a lot of unnecessary db queries to get current user
-// better provide a consistent userdata when checking token
-
 const Dashboard = (props) => {
   const { userData, setUserData } = props.userDataState;
   const { room, setRoom } = props.roomState;
@@ -18,6 +15,8 @@ const Dashboard = (props) => {
 
   const [ delay, setDelay ] = useState(3000);
 
+  // executes matchmaking logic
+  // send req to find room, then send req to confirm if room is ready
   useInterval(async () => {
     fetchPeopleSearching();
     if (!isRoomFound) {
@@ -32,7 +31,9 @@ const Dashboard = (props) => {
   useEffect(() => {
     console.log(room)
   }, [])
-
+  
+  // listens to data updates and enables redirect to room route
+  // after the moment when matchmaking have executed
   useEffect(() => {
     console.log('room id after set ' + room.id);
     console.log(`LOG:\nuserdata: ${require('util').inspect(userData)}\nroom: ${require('util').inspect(room)}\nflags: ${require('util').inspect({
@@ -50,6 +51,7 @@ const Dashboard = (props) => {
   const fetchPeopleSearching = () => {
     axios.get('http://localhost:7000/mm/get-users-searching')
       .then(result => {
+        console.log(result)
         const data = result.data.usersSearching;
         setUsersSearching(data)
       })
@@ -81,6 +83,7 @@ const Dashboard = (props) => {
   };
 
   const breakSearch = async (e) => {
+    console.log('i was called! (break)')
     e.preventDefault();
     setIsSearching(false);
     await axios.post('http://localhost:7000/mm/break-search');
@@ -103,8 +106,6 @@ const Dashboard = (props) => {
       { isSearching && <Timer isSearching={isSearching}/> }
       { isSearching && <div>users searching: {usersSearching}</div> }
 
-     
-
       { room.isReady && <Redirect to='/room'/> }
     </div>
   );
@@ -112,16 +113,15 @@ const Dashboard = (props) => {
 
 const Timer = (props) => {
   const { isSearching } = props;
-  const [timer, setTimer] = useState([0, 0]);
+  const [timer, setTimer] = useState({ mins: 0, secs: 0 });
   useInterval(() => {
-    // this is somehow not working
-    if (timer[1] === 60) setTimer([timer[0]+1, timer[1]]);
-    setTimer([timer[0], timer[1]+1]);
+    if (timer.mins === 60) { console.log('a minute');setTimer({mins: timer.mins+1, secs: timer.secs});}
+    setTimer({mins: timer.mins, secs: timer.secs+1});
   }, isSearching ? 1000 : null);
 
   return(
     <div>
-      { timer[0] }:{ timer[1] }
+      { timer.mins }:{ timer.secs }
     </div>
   );
 };

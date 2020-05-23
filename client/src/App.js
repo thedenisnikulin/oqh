@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-import { MuiThemeProvider, createMuiTheme } from '@material-ui/core'
-import { green } from '@material-ui/core/colors/green';
 import axios from 'axios';
 
 import Home from './components/home/Home';
 import { Login, Logout } from './components/auth/Login';
-import Register from './components/auth/Register';
+import { Register } from './components/auth/Register';
 
 import Protected from './components/Protected'
 import Dashboard from './components/dashboard/Dashboard'
@@ -15,11 +13,7 @@ import Room from './components/room/Room'
 const App = () => {
 
   axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('accessToken')}`
-  const theme = createMuiTheme({
-    palette: {
-      primary: green
-    }
-  })
+
   const [ userData, setUserData ] = useState({
     username: null,
     password: null,
@@ -52,9 +46,8 @@ const App = () => {
   }
 
   return (
-    <MuiThemeProvider theme={theme}>
       <Router>
-      <Switch>
+       <Switch>
 
         <Route exact path="/">
           <Home />
@@ -79,7 +72,6 @@ const App = () => {
 
       </Switch>
     </Router>
-    </MuiThemeProvider>
   );
 }
 

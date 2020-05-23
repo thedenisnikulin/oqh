@@ -29,7 +29,7 @@ const Chat = (props) => {
         socket.emit('init');
         socket.on('init', (initData) => {
             setHistory(initData.messages);
-        })
+        });
         return () => {
             leaveRoom();
         }
@@ -44,8 +44,7 @@ const Chat = (props) => {
 
     // listen to "leave" event
     useEffect(() => {
-        leaveRoom();
-        console.log(userData)
+        isUserLeaving && leaveRoom();
     }, [isUserLeaving])
 
 
@@ -55,12 +54,9 @@ const Chat = (props) => {
             socket.emit('disconnectRoom');
         }
         let arr = room.users;
-        console.log(room.users)
-        console.log(arr)
+        console.log('we are leaving')
         arr = room.users.filter((user) => user.username !== userData.username);
-        console.log(arr)
         arr = arr.map(u => { u.isRated = false; return u });
-        console.log(arr)
         setRoom({ ...room, id: '', users: arr, isReady: false });
         setUserData({ ...userData, roomId: '' });
         socket.emit('disconnectUser', userData.username);
@@ -71,7 +67,7 @@ const Chat = (props) => {
         let msg = {
             message,
             sender: userData,
-        }
+        };
         socket.emit('message', msg);
         setMessage('');
     }
@@ -117,7 +113,7 @@ const RateUsers = (props) => {
         setRoom({ ...room, users: arr });
         await axios.post('http://localhost:7000/room/add-rep', {
             valueToAdd: valueToAdd,
-            user: user,
+            username: user.username,
         });
     };
 
