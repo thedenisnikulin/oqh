@@ -1,9 +1,8 @@
 import React from 'react';
-import { useHistory, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 
-export const Register = (props) => {
-    const history = useHistory();
+const Register = (props) => {
     const { userData, setUserData }= props.userDataState;
     const { message, setMessage } = props.messageState;
   
@@ -19,18 +18,16 @@ export const Register = (props) => {
         bio: userData.bio,
         password: userData.password
       })
-        .then(response => {
-          const data = response.data
+        .then(response => response.data)
+        .then(data => {
           console.log(data)
-          if (data.error) {
-            setMessage(data.error);
-          } else if (data.success) {
+          if (data.success) {
             localStorage.setItem('accessToken', data.data.jwt);
             setUserData({
               username: data.data.user.username,
               bio: data.data.user.bio
             });
-            history.push('/dashboard')
+            props.history.push('/dashboard')
           };
           setMessage(data.message)
         })
@@ -68,3 +65,5 @@ export const Register = (props) => {
       </div>
     );
 };
+
+export default Register;

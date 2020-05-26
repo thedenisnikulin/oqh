@@ -14,9 +14,9 @@ const Protected = ({ children, verifyToken, access, loading, ...rest }) => {
          } else {
           if (access === true) {
             return children
-          } else {
+          } else if (access === false) {
             return <Redirect to={{
-              pathname: '/user/login',
+              pathname: '/login',
               state: { from: props.location }
             }} />
           }

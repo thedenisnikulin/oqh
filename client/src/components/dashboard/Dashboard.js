@@ -91,6 +91,7 @@ const Dashboard = (props) => {
 
   return (
     <div>
+      {console.log('from dash ' + props.access)}
       <div>{ userData.username }</div>
       <input 
         value={room.topic} 

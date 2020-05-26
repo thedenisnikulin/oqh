@@ -1,17 +1,17 @@
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Router, Switch, Route, Redirect } from 'react-router-dom';
 import axios from 'axios';
+import history from './components/history'
 
 import Home from './components/home/Home';
 import { Login, Logout } from './components/auth/Login';
-import { Register } from './components/auth/Register';
+import Register from './components/auth/Register';
 
 import Protected from './components/Protected'
 import Dashboard from './components/dashboard/Dashboard'
 import Room from './components/room/Room'
 
 const App = () => {
-
   axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('accessToken')}`
 
   const [ userData, setUserData ] = useState({
@@ -26,27 +26,34 @@ const App = () => {
     users: [],
     isReady: false
   });
-  const [ access, setAccess ] = useState();
+  const [ access, setAccess ] = useState(false);  // this state is not working properly with router, gonna use redux later
   const [ loading, setLoading ] = useState(true);
   const [ message, setMessage ] = useState();
+  const [ isLoggedIn, setIsLoggedIn ] = useState(false);
 
   const verifyToken = async () => {
-    console.log('before')
+    console.log('access before verification" ' + access)
     console.log(axios.defaults.headers.common['Authorization']);
     await axios.post('http://localhost:7000/token')
-      .then(response => {
-        console.log(response)
-        const data = response.data.data.tokenVerificationData;
-        data.user && setUserData(data.user);
-        data.message && setMessage(data.message);
-        setAccess(data.access)
+      .then(response => response.data.data)
+      .then(data => {
+        console.log(data)
+        if (data.tokenVerificationData.access) {
+          setUserData(data.tokenVerificationData.user);
+        } else {
+          history.push('/login')
+        }
+        setAccess(data.tokenVerificationData.access)
+        setMessage(data.tokenVerificationData.message);
+        console.log('access from verification: ' + data.tokenVerificationData.access)
         setLoading(false);
-        console.log('after')
+        console.log('access after verification: ' + access)
+
       })
   }
 
   return (
-      <Router>
+      <Router history={history}>
        <Switch>
 
         <Route exact path="/">
@@ -54,20 +61,28 @@ const App = () => {
         </Route>
 
         <Route exact path="/login"
-          render={(props) => <Login userDataState={{ userData, setUserData }} messageState={{ message, setMessage }} />} 
+          render={props => {
+            if (isLoggedIn) {
+              console.log('a l ' + isLoggedIn)
+              return(<Redirect to="/dashboard"/>)
+            } else {
+              console.log('a l ' + isLoggedIn)
+              return(<Login {...props} accessState={{access, setAccess}} userDataState={{ userData, setUserData }} messageState={{ message, setMessage }} />)
+            }
+        }} 
         />
 
         <Route exact path="/register"
-          render={(props) => <Register userDataState={{ userData, setUserData }} messageState={{ message, setMessage }} />} 
+          render={props => access ? <Redirect to="/dashboard" /> : <Register {...props} history={history} userDataState={{ userData, setUserData }} messageState={{ message, setMessage }} />} 
         />
 
         <Protected exact path='/dashboard' verifyToken={verifyToken} access={access} loading={loading}>
-          <Dashboard userDataState={{ userData, setUserData }} roomState={{ room, setRoom }} />
-          <Logout />
+          <Dashboard access={access} userDataState={{ userData, setUserData }} roomState={{ room, setRoom }} />
+          <Logout history={history} accessState={{access, setAccess}}/>
         </Protected>
 
         <Protected exact path='/room' verifyToken={verifyToken} access={access} loading={loading}>
-          <Room userDataState={{ userData, setUserData }} roomState={{ room, setRoom }}/>
+          <Room history={history} userDataState={{ userData, setUserData }} roomState={{ room, setRoom }}/>
         </Protected>
 
       </Switch>
