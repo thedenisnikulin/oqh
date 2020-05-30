@@ -37,17 +37,36 @@ export const Login = (props) => {
   return (
       <div className="auth-wrap">
       <div className="split left">
+        <div className='auth-title'>randezvous | LOGIN</div>
         <div className="centered">
-          <p>{message}</p>
+          <p style={{backgroundColor: "red"}}>{message}</p>
           <p>{JSON.stringify(userData)}</p>
           <form className="form-wrap" onSubmit={handleSubmit}>
-            <TextField style={{margin: "0 0 1rem 0"}} fullWidth required id="filled-basic" variant="filled" label="username" type="text" name="username" onChange={handleChange} />
-            <TextField style={{margin: "0 0 1rem 0"}} fullWidth required id="filled-basic" variant="filled" label="password" type="password" name="password" onChange={handleChange} />
+            <TextField style={{margin: "0 0 1rem 0"}} fullWidth required 
+              id="outlined-basic" 
+              variant="outlined" 
+              label="username" 
+              type="text" 
+              name="username" 
+              onChange={handleChange} 
+            />
+            <TextField style={{margin: "0 0 1rem 0"}} fullWidth required 
+              id="outlined-basic" 
+              variant="outlined" 
+              label="password" 
+              type="password" 
+              name="password" 
+              onChange={handleChange} />
             <div>
-            <Button fullWidth style={{backgroundColor: "#74D69D"}} variant="contained" type="submit" color="primary">Log in</Button>
+            <Button style={{backgroundColor: "#74D69D"}} fullWidth
+              variant="contained" 
+              type="submit" 
+              color="primary"
+            > Log in
+            </Button>
             </div>
           </form>
-          <div>Don't have an accout? {<Link to="/register">Register</Link>}</div>
+          <div>Don't have an account yet? {<Link to="/register">Register</Link>}</div>
         </div>
         
       </div>

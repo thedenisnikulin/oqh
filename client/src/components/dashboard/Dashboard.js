@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Redirect } from 'react-router-dom';
 import axios from 'axios';
+import { Logout } from '../auth/Login'
+import history from '../history';
+import { Button } from "@material-ui/core"
 
 import useInterval from '../../hooks/useInterval'
 
 const Dashboard = (props) => {
+  const { access, setAccess } = props.accessState;
+
   const { userData, setUserData } = props.userDataState;
   const { room, setRoom } = props.roomState;
 
@@ -90,25 +95,45 @@ const Dashboard = (props) => {
   }
 
   return (
-    <div>
-      {console.log('from dash ' + props.access)}
-      <div>{ userData.username }</div>
-      <input 
-        value={room.topic} 
-        onChange={(e) => setRoom({ ...room, topic: e.target.value })} 
-      />
+    <div className="background-main">
 
-      <TopicSelection roomState={props.roomState} />
+        <div className="main-container">
+          {console.log('from dash ' + props.access)}
+          <div className="split-mm left">
+            <div className="userdata-container">
+              <div className="userdata-inner">
+                <div className="prof-pic"></div>
+                <div className="userdata-right-from-pic">
+                  <div className="username">@username</div>
+                  <div className="rep">reputation: <span className="rep-count">counter</span></div>
+                </div>
+              </div>
+              <div className="bio">Hello everybody, my name is Denis, I'm a developer and hope you'd like to chat!</div>
+              <Logout history={history} accessState={props.accessState}/>
+            </div>
+          </div>
+          <div className='mm-settings-container split-mm right-mm'>
+            <div className="mm-inner">
+              select topic to chat about
+              <TopicSelection roomState={props.roomState} />
+              <Button 
+                fullWidth 
+                style={{backgroundColor: "#74D69D", color: "white"}} 
+                variant="contained" 
+                type="submit"
+                onClick={ isSearching ? breakSearch : () => setIsSearching(true) }
+              >
+                { isSearching ? <div>break</div> : <div>start</div> }
+              </Button> 
+              { isSearching && <Timer isSearching={isSearching}/> }
+              { isSearching && <div>users searching: {usersSearching}</div> }
+            </div>
+          </div>
+          { room.isReady && <Redirect to='/room'/> }
+        </div>
 
-      <button onClick={ isSearching ? breakSearch : () => setIsSearching(true) }>
-        { isSearching ? <div>break</div> : <div>start</div> }
-      </button>
-
-      { isSearching && <Timer isSearching={isSearching}/> }
-      { isSearching && <div>users searching: {usersSearching}</div> }
-
-      { room.isReady && <Redirect to='/room'/> }
-    </div>
+      </div>
+      
   );
 }
 
@@ -162,12 +187,16 @@ const TopicSelection = (props) => {
   }
 
   return(
-    <div>
-      <input placeholder='search...' onChange={handleSearchChange}/>
-      <div>
+    <div className="topic-selection">
+      <input
+        className="search-input"
+        placeholder='search...' 
+        onChange={handleSearchChange}
+      />
+      <div className="topics">
         {
           changeableTopics.map(topic => 
-            <input type='button' value={'#' + topic} onClick={handleButtonClick} />
+            <input className="topic" type='button' value={'#' + topic} onClick={handleButtonClick} />
           )
         }
       </div>

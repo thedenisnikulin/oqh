@@ -1,15 +1,23 @@
 body {
     margin: 0;
+    padding: 0;
 }
 
 .primary-button {
     background-color: #74D69D;
 };
 
+/*----------------auth------------------*/
 .auth-wrap {
     display: flex;
     flex-direction: row;
     justify-content: space-around;
+}
+
+.auth-title {
+    text-align: center;
+    margin-top: 7rem;
+    margin-bottom: 0;
 }
 
 .split {
@@ -40,10 +48,123 @@ body {
     left: 50%;
     transform: translate(-50%, -50%);
     text-align: center;
+    padding: 10rem;
+    width: 20rem
 }
 
 .form-wrap {
     display: flex;
     flex-direction: column;
     justify-content: space-around
+}
+
+/*----------------dashboard------------------*/
+/*
+    back - B3DEF7
+    search(dark) - AAB6C1
+    text - 2B3036
+    topics & bio - D5DCE3
+    rep number - 8B3DD4
+*/
+
+.background-main {
+    background-color: #B3DEF7;
+    margin: 0;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.main-container {
+    background-color: #ffffff;
+    width: 60%;
+    height: 60%;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 2.5%/5%;
+    height: 75%;
+    width: 55%;
+    overflow: hidden;
+};
+
+/* don't touch, it works */
+.mm-settings-container {
+    background-color: #EDF2F7;
+}
+
+.split-mm {
+    height: 100%;
+    width: 50%;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    overflow-x: hidden;
+}
+
+.right-mm {
+    right: 0;
+    background-color: #EDF2F7;
+}
+
+.userdata-container {
+    margin: 40% 0 0 15%;
+}
+
+.prof-pic {
+    height: 80px;
+    width: 80px;
+    background-color: red;
+    margin: 0 1rem 1rem 0;
+}
+
+.userdata-inner {
+    display: flex;
+    flex-direction: row;
+
+}
+
+
+
+.mm-inner {
+    margin: 40% 0 0 15%;
+    width: 17rem;
+}
+
+.topic-selection {
+    width: 100%; 
+}
+
+.search-input {
+    background-color: #AAB6C1;
+    color: white;
+    border: none;
+    height: 2rem;
+}
+
+.topics {
+    overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
+    height: 7rem;
+    background-color: #D5DCE3;  
+}
+
+.topic {
+    background-color: #D5DCE3;
+    border: none;
+    color: #5E6975;
+    text-align: start;
+    padding: 10px 0 10px 5px;
+}
+
+.search-input {
+    width: 100%;
+}
+
+.search-button {
+    width: 100%
 }

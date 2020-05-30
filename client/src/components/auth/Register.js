@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { TextField, Button } from '@material-ui/core'
 
 const Register = (props) => {
     const { userData, setUserData }= props.userDataState;
@@ -34,35 +35,54 @@ const Register = (props) => {
     }
   
     return (
-      <div>
-        <p>{message}</p>
-        <p>{JSON.stringify(userData)}</p>
-        <form onSubmit={handleSubmit}>
-          <input 
-            type='text' 
-            name='username' 
-            placeholder='Username' 
-            onChange={handleChange}
-            required
-          />
-          <input 
-            type='text' 
-            name='bio' 
-            placeholder='Bio' 
-            onChange={handleChange}
-            required
-          />
-          <input 
-            type='password'
-            name='password'
-            placeholder='Password'
-            onChange={handleChange}
-            required
-          />
-          <input type='submit' value='Sign up'/>
-        </form>
-        <div>Already registered? {<Link to="/login">Login</Link>}</div>
+      <div className="auth-wrap">
+      <div className="split right">
+        <div className='auth-title'>randezvous | REGISTER</div>
+        <div className="centered">
+          <p>{message}</p>
+          <p>{JSON.stringify(userData)}</p>
+          <form className="form-wrap" onSubmit={handleSubmit}>
+            <TextField style={{margin: "0 0 1rem 0"}} fullWidth required 
+              id="outlined-basic" 
+              variant="outlined" 
+              label="username" 
+              type="text" 
+              name="username" 
+              onChange={handleChange} 
+            />
+            <TextField style={{margin: "0 0 1rem 0"}} fullWidth required 
+              id="outlined-basic" 
+              variant="outlined" 
+              label="password" 
+              type="password" 
+              name="password" 
+              onChange={handleChange} />
+            <TextField style={{margin: "0 0 1rem 0"}} fullWidth required 
+              id="outlined-basic" 
+              variant="outlined" 
+              label="bio" 
+              type="bio" 
+              name="bio" 
+              onChange={handleChange} />
+            <div>
+            <Button style={{backgroundColor: "#74D69D"}} fullWidth
+              variant="contained" 
+              type="submit" 
+              color="primary"
+            > Log in
+            </Button>
+            </div>
+          </form>
+          <div>Already registered? {<Link to="/login">Login</Link>}</div>
+        </div>
+        
       </div>
+      <div className="split left split-rect">
+        <div className="centered">
+          hello
+        </div>
+      </div>
+    </div>  
     );
 };
 

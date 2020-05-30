@@ -26,10 +26,9 @@ const App = () => {
     users: [],
     isReady: false
   });
-  const [ access, setAccess ] = useState(false);  // this state is not working properly with router, gonna use redux later
-  const [ loading, setLoading ] = useState(true);
+  const [ access, setAccess ] = useState(true);  // this state is not working properly with router, gonna use redux later
+  const [ loading, setLoading ] = useState(false);
   const [ message, setMessage ] = useState();
-  const [ isLoggedIn, setIsLoggedIn ] = useState(false);
 
   const verifyToken = async () => {
     console.log('access before verification" ' + access)
@@ -48,7 +47,6 @@ const App = () => {
         console.log('access from verification: ' + data.tokenVerificationData.access)
         setLoading(false);
         console.log('access after verification: ' + access)
-
       })
   }
 
@@ -62,11 +60,11 @@ const App = () => {
 
         <Route exact path="/login"
           render={props => {
-            if (isLoggedIn) {
-              console.log('a l ' + isLoggedIn)
+            if (access) {
+              console.log('a l ' + access)
               return(<Redirect to="/dashboard"/>)
             } else {
-              console.log('a l ' + isLoggedIn)
+              console.log('a l ' + access)
               return(<Login {...props} accessState={{access, setAccess}} userDataState={{ userData, setUserData }} messageState={{ message, setMessage }} />)
             }
         }} 
@@ -77,8 +75,7 @@ const App = () => {
         />
 
         <Protected exact path='/dashboard' verifyToken={verifyToken} access={access} loading={loading}>
-          <Dashboard access={access} userDataState={{ userData, setUserData }} roomState={{ room, setRoom }} />
-          <Logout history={history} accessState={{access, setAccess}}/>
+          <Dashboard accessState={{access, setAccess}} userDataState={{ userData, setUserData }} roomState={{ room, setRoom }} />
         </Protected>
 
         <Protected exact path='/room' verifyToken={verifyToken} access={access} loading={loading}>
