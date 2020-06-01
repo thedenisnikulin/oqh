@@ -15,17 +15,43 @@ const App = () => {
   axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('accessToken')}`
 
   const [ userData, setUserData ] = useState({
-    username: null,
+    username: "me",
     password: null,
-    bio: null,
-    roomId: null
+    bio: "yeh",
+    roomId: "this"
   });
   const [ room, setRoom ] = useState({ 
-    id: '', 
-    topic: '', 
-    users: [],
+    id: 'blablabla', 
+    topic: 'media', 
+    users: [
+      {
+        id: "bluh",
+        username: "test1",
+        bio: "heeeeey",
+        roomId: 'this'
+      },
+      {
+        id: "bluh",
+        username: "test2",
+        bio: "heeeeey",
+        roomId: 'this'
+      },
+      {
+        id: "bluh",
+        username: "test3",
+        bio: "heeeeey",
+        roomId: 'this'
+      },
+      {
+        id: "bluh",
+        username: "test4",
+        bio: "heeeeey",
+        roomId: 'this'
+      }
+    ],
     isReady: false
   });
+  // change access = false; loading = true;
   const [ access, setAccess ] = useState(true);  // this state is not working properly with router, gonna use redux later
   const [ loading, setLoading ] = useState(false);
   const [ message, setMessage ] = useState();

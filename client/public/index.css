@@ -242,3 +242,150 @@ background: rgb(142, 152, 161);
 .topics::-webkit-scrollbar-thumb:hover {
 background: rgb(123, 132, 139); 
 }   
+
+
+/*-------------------room---------------------*/
+
+.room-members {
+    height: 100%;
+    width: 30%;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    overflow-x: hidden;
+    left: 0;
+    background-color: #D5DCE3;
+}
+
+.title {
+    background-color: #9FB1C4;
+    padding: 1rem 2rem;
+    color: white;
+    display: flex;
+    justify-content: row;
+}
+
+.member {
+    display: flex;
+    justify-content: row;
+    background-color: white;
+    margin: 20px;
+}
+
+.member-pic {
+    height: 35px;
+    width: 35px;
+    background-color: #C4C4C4;
+    margin: 10px;
+    border-radius: 50%;
+}
+
+.member-username {
+    margin: 1rem;
+}
+
+.messenger {
+    height: 100%;
+    width: 70%;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    overflow-x: hidden;
+    right: 0;
+}
+
+ul{
+    list-style: none;
+    margin: 3rem 0 0 0;
+    padding: 0;
+  }
+  
+  ul li{
+    display:inline-block;
+    clear: both;
+    padding: 15px;
+    border-radius: 30px;
+    margin-bottom: 10px;
+  }
+  
+  .msg-not-me{
+    background: #EDF2F7;
+    float: left;
+    margin-left: 10px;
+    color: #5E6975;
+  }
+  
+  .msg-me{
+    float: right;
+    background: #EDF2F7;
+    color: #5E6975;
+    margin-right: 10px;
+  }
+  
+  .msg-not-me + .msg-me{
+    border-bottom-right-radius: 5px;
+  }
+  
+  .msg-me:last-of-type {
+    border-bottom-right-radius: 30px;
+  }
+
+.msg-sender-username {
+    color: #548CC7;
+}
+
+.msg-form {
+    bottom: 0;
+    position: absolute;
+    width: 100%;
+    white-space: nowrap;
+} 
+
+.msg-input {
+    width: 80%;
+    height: 2.5rem;
+    background-color: #EDF2F7;
+    outline: none;
+    border: none;
+    font-size: 20px;
+    color: #5E6975;
+}
+
+.msg-input::placeholder {
+    color: #5E6975;
+    font-size: 20px;
+    padding: 0 0 0 10px;
+}
+
+.msg-input:focus {
+    padding: 0 0 0 10px;
+}
+.msg-input:focus::placeholder {
+    outline: none;
+    color: #EDF2F7;
+}
+
+.msg-send {
+    width: 20%;
+    height: 2.65rem;
+    border: none;
+    background-color: #74D69D;
+    color: white;
+    font-size: 20px;
+    bottom: 0;
+    position: absolute;
+    outline: none;
+}
+
+.msg-send:active {
+    outline: none;
+    border: none;
+    background-color: rgb(161, 219, 185)
+}
+
+.empty-msgs {
+    text-align: center;
+    margin: 1rem 0;
+    font-size: 20px;
+    color: #5E6975;
+}

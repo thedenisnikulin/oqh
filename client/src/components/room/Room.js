@@ -18,7 +18,35 @@ const Chat = (props) => {
     const { userData, setUserData } = props.userDataState;
     const { room, setRoom } = props.roomState;
     const [ message, setMessage ] = useState('');
-    const [ history, setHistory ] = useState([]);
+    const [ history, setHistory ] = useState([
+        {
+            message: 'hello',
+            sender: {
+                id: "bluh",
+                username: "test1",
+                bio: "heeeeey",
+                roomId: 'this'
+            }
+        },
+        {
+            message: 'hey there',
+            sender: {
+                id: "bluh",
+                username: "test2",
+                bio: "heeeeey",
+                roomId: 'this'
+            }
+        },
+        {
+            message: 'fuck you all',
+            sender: {
+                id: "bluh",
+                username: "me",
+                bio: "yeh",
+                roomId: 'this'
+              }
+        }
+    ]);
     const [ isUserLeaving, setIsUserLeaving ] = useState(false);
 
     // initialize data on mount
@@ -77,20 +105,41 @@ const Chat = (props) => {
     };
 
     return(
-        <div>
-            {
-                history.length === 0 ? <div>start conversation</div> : history.map(msg => 
-                    <div>
-                        {msg.message} - {msg.sender.username}
+        <div className="background-main">
+            <div className="main-container">
+                <div className="room-members">
+                    <div className="title">
+                        <div className="tite-text">{room.topic}</div>
+                        <button onClick={() => setIsUserLeaving(true)}>:</button>
                     </div>
-                )
-            }
-            <form onSubmit={handleSubmit}>
-                <input onChange={handleChange} value={message}/>
-                <button>submit</button>
-            </form>
-            <button onClick={() => setIsUserLeaving(true)}>leave</button>
-            { isUserLeaving && <RateUsers userData={userData} roomState={ props.roomState } /> }
+                    {
+                        room.users.map(user => (
+                            <div className="member">
+                                <div className="member-pic"></div>
+                                <div className="member-username">@{user.username}</div>
+                            </div>
+                        ))
+                    }
+                </div>
+                <div className="messenger">
+                    <ul >
+                        {
+                            history.length === 0 ? <div className="empty-msgs">Say something, e.g. "Hi"</div> : history.map(msg => 
+                                <li className={msg.sender.username === userData.username ? "msg-me" : "msg-not-me"}>
+                                    {msg.sender.username !== userData.username && <div className="msg-sender-username">{"@" + msg.sender.username !== userData.username && msg.sender.username}</div>}
+                                    <div className="message-text">{msg.message}</div>
+                                </li>
+                            )
+                        }
+                    </ul>
+                    
+                    <form className="msg-form" onSubmit={handleSubmit}>
+                        <input placeholder="type here" className="msg-input" onChange={handleChange} value={message}/>
+                        <button className="msg-send">></button>
+                    </form>
+                    { isUserLeaving && <RateUsers userData={userData} roomState={ props.roomState } /> }
+                </div>
+            </div>
         </div>
     );
 }
