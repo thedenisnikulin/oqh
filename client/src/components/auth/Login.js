@@ -89,8 +89,13 @@ export const Logout = (props) => {
   }
 
   return(
-    <div>
-      <button onClick={handleClick}>Log out</button>
+    <div className="logout-button-container">
+      <Button
+        style={{backgroundColor: "#FF8383", padding: "0.25rem 0.75rem", color: "white"}} 
+        variant="contained" 
+        type="submit"                                 
+        onClick={handleClick}
+      >Log out</Button>
     </div>
   );
 };

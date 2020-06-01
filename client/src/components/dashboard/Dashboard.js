@@ -105,22 +105,22 @@ const Dashboard = (props) => {
                 <div className="prof-pic"></div>
                 <div className="userdata-right-from-pic">
                   <div className="username">@username</div>
-                  <div className="rep">reputation: <span className="rep-count">counter</span></div>
+                  <div className="rep">reputation: <span className="rep-count">31</span></div>
                 </div>
               </div>
               <div className="bio">Hello everybody, my name is Denis, I'm a developer and hope you'd like to chat!</div>
-              <Logout history={history} accessState={props.accessState}/>
             </div>
+            <Logout history={history} accessState={props.accessState}/>
           </div>
           <div className='mm-settings-container split-mm right-mm'>
             <div className="mm-inner">
-              select topic to chat about
+              {room.topic ? <div>selected topic: #{room.topic}</div> : <div>select topic to chat about</div>}
               <TopicSelection roomState={props.roomState} />
               <Button 
                 fullWidth 
-                style={{backgroundColor: "#74D69D", color: "white"}} 
+                style={{backgroundColor: isSearching ? "#FF8383" : "#74D69D", color: "white"}} 
                 variant="contained" 
-                type="submit"
+                type="submit"                                 
                 onClick={ isSearching ? breakSearch : () => setIsSearching(true) }
               >
                 { isSearching ? <div>break</div> : <div>start</div> }

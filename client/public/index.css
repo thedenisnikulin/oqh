@@ -7,6 +7,10 @@ body {
     background-color: #74D69D;
 };
 
+.MuiButton-contained {
+    box-shadow: 0;
+}
+
 /*----------------auth------------------*/
 .auth-wrap {
     display: flex;
@@ -75,6 +79,7 @@ body {
     position: absolute;
     left: 0;
     top: 0;
+    font-family: 'Roboto', sans-serif;
 }
 
 .main-container {
@@ -89,6 +94,7 @@ body {
     height: 75%;
     width: 55%;
     overflow: hidden;
+    box-shadow: 5px 10px 18px #888888
 };
 
 /* don't touch, it works */
@@ -111,14 +117,15 @@ body {
 }
 
 .userdata-container {
-    margin: 40% 0 0 15%;
+    margin: 40% 15% 0 15%;
 }
 
 .prof-pic {
     height: 80px;
     width: 80px;
-    background-color: red;
-    margin: 0 1rem 1rem 0;
+    background-color: #C4C4C4;
+    margin: 0 1.5rem 1.5rem 0;
+    border-radius: 50%;
 }
 
 .userdata-inner {
@@ -127,11 +134,43 @@ body {
 
 }
 
+.userdata-right-from-pic {
+    display: flex;
+    flex-direction: column;
+}
 
+.username {
+    font-size: 20px;
+    background-color: #D5DCE3;
+    margin: 0 0 0.5rem 0;
+}
+
+.rep {
+    font-size: 20px;
+    flex-grow: 1;
+}
+
+.rep-count {
+    color: #8B3DD4;
+}
+
+.bio {
+    color: #2B3036;
+    background-color: #D5DCE3;
+    font-size: 18px;
+    padding: 15px
+}
+
+.logout-button-container {
+    margin: 25% 0 0 75%;
+}
 
 .mm-inner {
     margin: 40% 0 0 15%;
     width: 17rem;
+    color: #2B3036;
+    text-align: center;
+    font-size: 17px;
 }
 
 .topic-selection {
@@ -140,9 +179,23 @@ body {
 
 .search-input {
     background-color: #AAB6C1;
-    color: white;
     border: none;
     height: 2rem;
+    width: 98.5%;
+}
+
+.search-input::placeholder {
+    color: white;
+    font-size: 17px;
+    padding: 0 0 0 10px;
+}
+.search-input:focus::placeholder {
+    outline: none;
+    color: #AAB6C1
+}
+
+.search-input:focus {
+    outline: none;
 }
 
 .topics {
@@ -150,7 +203,8 @@ body {
     display: flex;
     flex-direction: column;
     height: 7rem;
-    background-color: #D5DCE3;  
+    background-color: #D5DCE3;
+    margin: 0 0 1rem 0;
 }
 
 .topic {
@@ -161,10 +215,30 @@ body {
     padding: 10px 0 10px 5px;
 }
 
-.search-input {
-    width: 100%;
+.topic:focus {
+    outline: none;
+    background: rgb(199, 206, 212);
 }
 
 .search-button {
     width: 100%
 }
+
+.topics::-webkit-scrollbar {
+    width: 10px;
+  }
+  
+  /* Track */
+.topics::-webkit-scrollbar-track {
+background: #D5DCE3; 
+}
+
+/* Handle */
+.topics::-webkit-scrollbar-thumb {
+background: rgb(142, 152, 161); 
+}
+
+/* Handle on hover */
+.topics::-webkit-scrollbar-thumb:hover {
+background: rgb(123, 132, 139); 
+}   
