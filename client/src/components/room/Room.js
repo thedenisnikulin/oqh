@@ -2,6 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Redirect } from 'react-router-dom';
 import axios from 'axios';
 import io from 'socket.io-client';
+import ControlledExpansionPanel from "./ExpansionPanel"
+import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
+import ExpandLessIcon from '@material-ui/icons/ExpandLess';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import IconButton from '@material-ui/core/IconButton';
+import Button from '@material-ui/core/Button';
+import ModalOnLeave from './ModalOnLeave';
 
 let socket;
 
@@ -15,6 +22,8 @@ const Room = (props) => {
 };
 
 const Chat = (props) => {
+    const [open, setOpen] = useState(false);
+
     const { userData, setUserData } = props.userDataState;
     const { room, setRoom } = props.roomState;
     const [ message, setMessage ] = useState('');
@@ -38,14 +47,14 @@ const Chat = (props) => {
             }
         },
         {
-            message: 'fuck you all',
+            message: 'fuck you all fuck you allfuck you allfuck you allfuck you allfuck you allfuck you allfuck you allfuck you allfuck you allfuck you allfuck you all',
             sender: {
                 id: "bluh",
                 username: "me",
                 bio: "yeh",
                 roomId: 'this'
               }
-        }
+        },
     ]);
     const [ isUserLeaving, setIsUserLeaving ] = useState(false);
 
@@ -109,42 +118,45 @@ const Chat = (props) => {
             <div className="main-container">
                 <div className="room-members">
                     <div className="title">
-                        <div className="tite-text">{room.topic}</div>
-                        <button onClick={() => setIsUserLeaving(true)}>:</button>
+                        <IconButton color="primary" style={{color: "white"}} onClick={() => {setIsUserLeaving(true); setOpen(true)}}>
+                            <NavigateBeforeIcon />
+                        </IconButton>
+                        <ModalOnLeave openModalState={{open, setOpen}} userData={userData} roomState={ props.roomState } />
+                        <div className="title-text">#{room.topic}</div>
                     </div>
-                    {
-                        room.users.map(user => (
-                            <div className="member">
-                                <div className="member-pic"></div>
-                                <div className="member-username">@{user.username}</div>
-                            </div>
-                        ))
-                    }
+                    <div className="members-container">
+                        {
+                            room.users.map(user => (
+                                <ControlledExpansionPanel user={user} />
+                            ))
+                        }
+                    </div>
+                    
                 </div>
                 <div className="messenger">
-                    <ul >
-                        {
-                            history.length === 0 ? <div className="empty-msgs">Say something, e.g. "Hi"</div> : history.map(msg => 
-                                <li className={msg.sender.username === userData.username ? "msg-me" : "msg-not-me"}>
-                                    {msg.sender.username !== userData.username && <div className="msg-sender-username">{"@" + msg.sender.username !== userData.username && msg.sender.username}</div>}
-                                    <div className="message-text">{msg.message}</div>
-                                </li>
-                            )
-                        }
-                    </ul>
-                    
+                    <div className="messages">
+                        <ul >
+                            {
+                                history.length === 0 ? <div className="empty-msgs">Say something, e.g. "Hi"</div> : history.map(msg => 
+                                    <li className={msg.sender.username === userData.username ? "msg-me" : "msg-not-me"}>
+                                        {msg.sender.username !== userData.username && <div className="msg-sender-username">{"@" + msg.sender.username !== userData.username && msg.sender.username}</div>}
+                                        <div className="message-text">{msg.message}</div>
+                                    </li>
+                                )
+                            }
+                        </ul>
+                    </div>
                     <form className="msg-form" onSubmit={handleSubmit}>
                         <input placeholder="type here" className="msg-input" onChange={handleChange} value={message}/>
                         <button className="msg-send">></button>
                     </form>
-                    { isUserLeaving && <RateUsers userData={userData} roomState={ props.roomState } /> }
                 </div>
             </div>
         </div>
     );
 }
 
-const RateUsers = (props) => {
+export const RateUsers = (props) => {
     const userData = props.userData;
     const { room, setRoom } = props.roomState;
     const [ feedbackCount, setFeedbackCount ] = useState(0);
@@ -167,25 +179,39 @@ const RateUsers = (props) => {
     };
 
     return(
-        <div>
-            {
-                room.users.map(user =>
-                    <div>
-                        <div>
-                            { user.username }
+        <div className="rate-users-container">
+            <div className="rate-title">How do you like these guys?</div>
+            <div className="rating">
+                {
+                    room.users.map(user =>
+                        <div className="user-to-rate">
+                            <div className="user-data-rate">
+                                <div className="member-pic"></div>
+                                <div className="member-username">
+                                    @{ user.username }
+                                </div>
+                            </div>
+                            {
+                                !user.isRated ? <div className="rate-buttons-container">
+                                    <IconButton color="primary" style={{color: "#74D69D"}} onClick={ () => handleClick(1, user) }>
+                                        <ExpandLessIcon />
+                                    </IconButton>
+                                    <IconButton color="primary" style={{color: "#FF8383"}} onClick={ () => handleClick(-1, user) }>
+                                        <ExpandMoreIcon />
+                                    </IconButton>
+                                </div> : <div style={{marginRight: "2rem"}}>rated</div>
+                            }
                         </div>
-                        {
-                            !user.isRated ? <div>
-                                <button onClick={ () => handleClick(1, user) }>up</button>
-                                <button onClick={ () => handleClick(-1, user) }>down</button>
-                            </div> : <div>rated</div>
-                        }
-                    </div>
-                )
+                    )
+                }
+                { isRedirect && <Redirect to="/dashboard" /> }
+            </div>
+            { 
+                feedbackCount === 3 && 
+                    <input type='button' value='go back' onClick={ () => setIsRedirect(true) } /> 
             }
-            { feedbackCount === 3 && <input type='button' value='go back' onClick={ () => setIsRedirect(true) } /> }
-            { isRedirect && <Redirect to="/dashboard" /> }
         </div>
+        
     );
 }
 

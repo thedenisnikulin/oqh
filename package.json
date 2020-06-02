@@ -8,6 +8,7 @@
     "dev": "concurrently -n 'server,client' -c 'red,green' \"npm start\" \"npm run client\""
   },
   "dependencies": {
+    "@material-ui/icons": "^4.9.1",
     "axios": "^0.19.2",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
