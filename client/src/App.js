@@ -81,7 +81,11 @@ const App = () => {
        <Switch>
 
         <Route exact path="/">
+<<<<<<< HEAD
           <Home history={history}/>
+=======
+          <Home />
+>>>>>>> dependabot/npm_and_yarn/client/websocket-extensions-0.1.4
         </Route>
 
         <Route exact path="/login"

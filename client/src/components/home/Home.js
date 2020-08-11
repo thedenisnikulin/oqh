@@ -1,4 +1,5 @@
 import React from 'react';
+<<<<<<< HEAD
 import Swiper from "react-id-swiper";
 import { Button } from "@material-ui/core"
 
@@ -60,6 +61,14 @@ const Home = (props) => {
           }}>Register</Button>
         </div>
       </div>
+=======
+
+function Home() {
+
+  return (
+    <div>
+      <h1>Home</h1>
+>>>>>>> dependabot/npm_and_yarn/client/websocket-extensions-0.1.4
     </div>
   );
 }

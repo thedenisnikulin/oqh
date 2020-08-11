@@ -11,6 +11,7 @@ body {
     box-shadow: 0;
 }
 
+<<<<<<< HEAD
 .loading {
     text-align: center;
     display: table;
@@ -80,6 +81,8 @@ body {
     text-align: center;
 }
 
+=======
+>>>>>>> dependabot/npm_and_yarn/client/websocket-extensions-0.1.4
 /*----------------auth------------------*/
 .auth-wrap {
     display: flex;
@@ -91,8 +94,11 @@ body {
     text-align: center;
     margin-top: 7rem;
     margin-bottom: 0;
+<<<<<<< HEAD
     font-size: 30px;
     font-weight: 900;
+=======
+>>>>>>> dependabot/npm_and_yarn/client/websocket-extensions-0.1.4
 }
 
 .split {
@@ -233,7 +239,11 @@ body {
 }
 
 .logout-button-container {
+<<<<<<< HEAD
     margin: 22% 0 0 75%;
+=======
+    margin: 25% 0 0 75%;
+>>>>>>> dependabot/npm_and_yarn/client/websocket-extensions-0.1.4
 }
 
 .mm-inner {
@@ -404,12 +414,17 @@ ul{
     background: #EDF2F7;
     float: left;
     margin-left: 10px;
+<<<<<<< HEAD
     color: rgb(45, 50, 56);
+=======
+    color: #5E6975;
+>>>>>>> dependabot/npm_and_yarn/client/websocket-extensions-0.1.4
   }
   
   .msg-me{
     float: right;
     background: #EDF2F7;
+<<<<<<< HEAD
     color: rgb(45, 50, 56);
     margin-right: 10px;
   }
@@ -420,6 +435,11 @@ ul{
   .msg-me:hover {
     background-color: rgb(227, 232, 236);
   }
+=======
+    color: #5E6975;
+    margin-right: 10px;
+  }
+>>>>>>> dependabot/npm_and_yarn/client/websocket-extensions-0.1.4
   
   .msg-not-me + .msg-me{
     border-bottom-right-radius: 5px;
@@ -447,7 +467,11 @@ ul{
     outline: none;
     border: none;
     font-size: 20px;
+<<<<<<< HEAD
     color: rgb(45, 50, 56);
+=======
+    color: #5E6975;
+>>>>>>> dependabot/npm_and_yarn/client/websocket-extensions-0.1.4
 }
 
 .msg-input::placeholder {
@@ -481,10 +505,13 @@ ul{
     background-color: rgb(161, 219, 185)
 }
 
+<<<<<<< HEAD
 .msg-send:hover {
     background-color: rgb(161, 219, 185)
 }
 
+=======
+>>>>>>> dependabot/npm_and_yarn/client/websocket-extensions-0.1.4
 .empty-msgs {
     text-align: center;
     margin: 1rem 0;

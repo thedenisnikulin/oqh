@@ -37,7 +37,11 @@ export const Login = (props) => {
   return (
       <div className="auth-wrap">
       <div className="split left">
+<<<<<<< HEAD
         <div className='auth-title'><span style={{fontWeight: "400"}}>chatterest |</span>  LOG IN</div>
+=======
+        <div className='auth-title'>randezvous | LOGIN</div>
+>>>>>>> dependabot/npm_and_yarn/client/websocket-extensions-0.1.4
         <div className="centered">
           <p style={{backgroundColor: "red"}}>{message}</p>
           <p>{JSON.stringify(userData)}</p>
@@ -72,7 +76,11 @@ export const Login = (props) => {
       </div>
     <div className="split right split-rect">
       <div className="centered">
+<<<<<<< HEAD
         <img style={{height: "20rem"}} src={require('../../assets/auth.svg')}/>
+=======
+        hello
+>>>>>>> dependabot/npm_and_yarn/client/websocket-extensions-0.1.4
       </div>
     </div>
     </div>  

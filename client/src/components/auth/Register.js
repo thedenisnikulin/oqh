@@ -37,7 +37,11 @@ const Register = (props) => {
     return (
       <div className="auth-wrap">
       <div className="split right">
+<<<<<<< HEAD
         <div className='auth-title'><span style={{fontWeight: "400"}}>chatterest |</span> REGISTER</div>
+=======
+        <div className='auth-title'>randezvous | REGISTER</div>
+>>>>>>> dependabot/npm_and_yarn/client/websocket-extensions-0.1.4
         <div className="centered">
           <p>{message}</p>
           <p>{JSON.stringify(userData)}</p>
@@ -79,7 +83,11 @@ const Register = (props) => {
       </div>
       <div className="split left split-rect">
         <div className="centered">
+<<<<<<< HEAD
           <img style={{height: "20rem"}} src={require('../../assets/auth.svg')}/>
+=======
+          hello
+>>>>>>> dependabot/npm_and_yarn/client/websocket-extensions-0.1.4
         </div>
       </div>
     </div>  

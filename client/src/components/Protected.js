@@ -10,7 +10,11 @@ const Protected = ({ children, verifyToken, access, loading, ...rest }) => {
       <div>
         <Route {...rest} render={(props) => {
          if (loading) {
+<<<<<<< HEAD
           return <div className="loading">Loading...</div>
+=======
+          return <h1>Loading...</h1>
+>>>>>>> dependabot/npm_and_yarn/client/websocket-extensions-0.1.4
          } else {
           if (access === true) {
             return children

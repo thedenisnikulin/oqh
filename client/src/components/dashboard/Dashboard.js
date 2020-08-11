@@ -4,7 +4,10 @@ import axios from 'axios';
 import { Logout } from '../auth/Login'
 import history from '../history';
 import { Button } from "@material-ui/core"
+<<<<<<< HEAD
 import UserAvatar from '../UserAvatar';
+=======
+>>>>>>> dependabot/npm_and_yarn/client/websocket-extensions-0.1.4
 
 import useInterval from '../../hooks/useInterval'
 
@@ -103,7 +106,11 @@ const Dashboard = (props) => {
           <div className="split-mm left">
             <div className="userdata-container">
               <div className="userdata-inner">
+<<<<<<< HEAD
                 <UserAvatar username={userData.username} size="large"/>
+=======
+                <div className="prof-pic"></div>
+>>>>>>> dependabot/npm_and_yarn/client/websocket-extensions-0.1.4
                 <div className="userdata-right-from-pic">
                   <div className="username">@username</div>
                   <div className="rep">reputation: <span className="rep-count">31</span></div>
